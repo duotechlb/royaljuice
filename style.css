@@ -80,7 +80,12 @@ body::after {
     display:flex; align-items:center; gap:11px;
     cursor:pointer; user-select:none;
 }
-.logo-svg { width:42px; height:42px; flex-shrink:0; }
+.header-logo-img {
+    width: 42px;
+    height: auto;
+    display: block;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));
+}
 .logo-text-group { display:flex; flex-direction:column; gap:1px; }
 .logo-name {
     font-family:'Playfair Display', serif;
@@ -258,10 +263,27 @@ body::after {
 
 #categoryGridView { max-width:1000px; margin:0 auto; padding:1.5rem 1.2rem 2rem; }
 
+/* Large logo on menu category page */
+.menu-logo-wrap {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+.menu-logo-large {
+    width: 140px;
+    max-width: 55vw;
+    height: auto;
+    filter: drop-shadow(0 4px 12px rgba(210,160,60,0.3));
+    transition: transform 0.2s ease;
+}
+.menu-logo-large:hover {
+    transform: scale(1.02);
+}
+
 .section-heading { text-align:center; margin-bottom:2rem; }
 .section-heading h2 {
     font-family:'Playfair Display', serif;
-    font-size:2.2rem; font-weight:700;
+    font-size: 1.8rem; /* reduced from 2.2rem */
+    font-weight:700;
     background:linear-gradient(135deg,var(--text),var(--amber-light));
     -webkit-background-clip:text; background-clip:text; color:transparent;
 }
@@ -851,6 +873,12 @@ body::after {
     .add-btn { padding:.32rem .7rem; font-size:.68rem; }
     .cat-section { padding:1.5rem .9rem .8rem; }
     .pills-bar { top:62px; }
+    .section-heading h2 {
+        font-size: 1.5rem;
+    }
+    .menu-logo-large {
+        width: 110px;
+    }
     /* Larger tap targets on mobile for co-type-btns */
     .co-type-btn { padding:.85rem .3rem; font-size:.75rem; }
     .co-confirm-btn { padding:1rem; font-size:1rem; }
