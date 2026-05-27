@@ -5,7 +5,8 @@
 // ============================================================
 // CONFIG — Google Sheet (fetched via gviz API, no CORS issues)
 // ============================================================
-const SHEET_ID  = "1N7apz3BducRmDsAC00SfMFsEJOHISu1_JF8zs81swg";
+// ✅ Fixed sheet ID (double 'f' as in your link)
+const SHEET_ID  = "1N7apz3BducRmDsAC00SffMFsEJOHISu1_JF8zs81swg";
 const SHEET_GID = "1143054748"; // Sheet tab ID from the URL
 
 // WhatsApp number
@@ -24,7 +25,7 @@ const CATEGORIES = [
 ];
 
 // ============================================================
-// FALLBACK MENU — only used if the sheet cannot be loaded
+// FALLBACK MENU — only used if sheet fails
 // ============================================================
 const FALLBACK_MENU = [
     { id:"j1", name:"Orange Juice",     category:"juices", description:"Freshly squeezed oranges", price_s:5, price_m:5, price_l:5, price_fixed:null, image:"https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?w=600" },
@@ -96,7 +97,7 @@ function navigate(pageId) {
 }
 
 // ============================================================
-// FETCH MENU — from Google Sheets (public required)
+// FETCH MENU — from Google Sheets (requires sheet to be published to web)
 // ============================================================
 async function fetchMenu() {
     try {
@@ -136,11 +137,11 @@ async function fetchMenu() {
         
         menuItems = items.map(normalizeItem);
         console.log(`✅ Loaded ${menuItems.length} items from Google Sheets`);
-        return; // success
+        showToast("✅ Menu loaded from Google Sheets", 3000);
+        return;
     } catch (err) {
         console.error("❌ Google Sheets fetch failed:", err);
-        showToast("⚠️ Could not load from sheet. Using fallback menu. Make sure your sheet is published to the web.");
-        // Fallback to static data so the site still works
+        showToast("⚠️ Using fallback menu. Please publish your sheet to the web.", 5000);
         menuItems = FALLBACK_MENU.map(normalizeItem);
     }
     itemsViewReady = false;
@@ -152,7 +153,6 @@ function normalizeItem(item) {
     const pl = parseFloat(item.price_l)     || null;
     const pf = parseFloat(item.price_fixed) || null;
 
-    // hasSizes only if all three S/M/L exist and not all equal
     const hasSizes = !!(ps && pm && pl && !(ps === pm && pm === pl));
     const displayPrice = hasSizes ? ps : (pf || ps || pm || pl);
 
@@ -605,12 +605,12 @@ function closeMobileNav() {
 // TOAST
 // ============================================================
 let toastTimer;
-function showToast(msg) {
+function showToast(msg, duration = 2200) {
     const t = $("toastMsg");
     t.textContent = msg;
     t.classList.add("show");
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => t.classList.remove("show"), 2200);
+    toastTimer = setTimeout(() => t.classList.remove("show"), duration);
 }
 
 // ============================================================
