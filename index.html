@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Royal Juice | Cocktails & Crêpes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header class="header" id="siteHeader">
+    <div class="nav-container">
+
+        <div class="logo-area" id="logoHomeBtn">
+            <svg class="logo-svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="24" cy="24" r="24" fill="rgba(210,160,60,0.12)"/>
+                <rect x="10" y="30" width="28" height="4.5" rx="2.2" fill="#D2A03C"/>
+                <polygon points="10,30 13,20 18,27 24,14 30,27 35,20 38,30" fill="#D2A03C"/>
+                <circle cx="24" cy="18" r="2.2" fill="#fff" opacity="0.9"/>
+                <circle cx="15.5" cy="25" r="1.4" fill="#fff" opacity="0.65"/>
+                <circle cx="32.5" cy="25" r="1.4" fill="#fff" opacity="0.65"/>
+            </svg>
+            <div class="logo-text-group">
+                <span class="logo-name">Royal Juice</span>
+                <span class="logo-tagline">cocktail · crêpe · shake</span>
+            </div>
+        </div>
+
+        <nav class="desktop-nav">
+            <span class="nav-item active" data-page="home">Home</span>
+            <span class="nav-item" data-page="menu">Menu</span>
+            <span class="nav-item" data-page="about">About</span>
+            <span class="nav-item" data-page="contact">Contact</span>
+        </nav>
+
+        <div class="header-right">
+            <button class="cart-btn" id="cartIconBtn" aria-label="Your bag">
+                <i class="fas fa-bag-shopping"></i>
+                <span class="cart-badge" id="cartCountBadge">0</span>
+            </button>
+            <button class="hamburger" id="mobileMenuToggle" aria-label="Open menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Mobile Nav Drawer -->
+    <nav class="mobile-nav" id="mobileNav">
+        <span class="mob-nav-item" data-page="home">🏠 Home</span>
+        <span class="mob-nav-item" data-page="menu">🍹 Menu</span>
+        <span class="mob-nav-item" data-page="about">📖 About</span>
+        <span class="mob-nav-item" data-page="contact">📞 Contact</span>
+    </nav>
+</header>
+
+<!-- ===== HOME PAGE ===== -->
+<main id="homePage" class="page active">
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-inner">
+            <span class="hero-badge">Zgharta · Main Street</span>
+            <h1 class="hero-h1">Royal<br><em>Juice</em></h1>
+            <p class="hero-sub">Handcrafted cocktails · Creamy milkshakes · Sweet crêpes</p>
+            <button class="hero-cta" id="exploreMenuBtn">
+                Explore the Menu <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+        <div class="hero-orbs">
+            <div class="orb o1"></div>
+            <div class="orb o2"></div>
+            <div class="orb o3"></div>
+        </div>
+    </section>
+
+    <section class="home-features">
+        <div class="feat-card">
+            <div class="feat-icon">🍊</div>
+            <h3>Fresh Ingredients</h3>
+            <p>Real fruits, premium spirits — no compromises.</p>
+        </div>
+        <div class="feat-card">
+            <div class="feat-icon">✨</div>
+            <h3>Crafted With Love</h3>
+            <p>Every drink is a small work of art.</p>
+        </div>
+        <div class="feat-card">
+            <div class="feat-icon">💬</div>
+            <h3>Order via WhatsApp</h3>
+            <p>Build your bag, then send it straight to us.</p>
+        </div>
+    </section>
+</main>
+
+<!-- ===== MENU PAGE ===== -->
+<main id="menuPage" class="page">
+
+    <!-- CATEGORY GRID (shown first) -->
+    <div id="categoryGridView">
+        <div class="section-heading">
+            <h2>Our Menu</h2>
+            <p>Choose a category to get started</p>
+        </div>
+        <div class="cat-grid" id="catGrid">
+            <!-- Rendered by JS -->
+        </div>
+    </div>
+
+    <!-- ITEMS VIEW (shown after selecting a category) -->
+    <div id="itemsView" class="hidden">
+        <!-- Sticky pill nav -->
+        <div class="pills-bar" id="pillsBar">
+            <div class="pills-scroll" id="pillsScroll">
+                <!-- Rendered by JS -->
+            </div>
+        </div>
+        <!-- All category sections -->
+        <div id="allSections">
+            <!-- Rendered by JS -->
+        </div>
+    </div>
+
+</main>
+
+<!-- ===== ABOUT PAGE ===== -->
+<main id="aboutPage" class="page">
+    <div class="inner-page">
+        <h2 class="inner-title">About Us</h2>
+        <div class="about-cards">
+            <div class="info-card">
+                <div class="info-icon">🌱</div>
+                <h3>Our Story</h3>
+                <p>Royal Juice was born from a passion for vibrant flavors and joyful moments. We blend classic techniques with modern twists to create drinks that taste as good as they look. Every ingredient is carefully selected — because you deserve the best.</p>
+            </div>
+            <div class="info-card">
+                <div class="info-icon">🕓</div>
+                <h3>Opening Hours</h3>
+                <p><strong>Monday – Thursday</strong><br>4:00 pm – 1:00 am</p>
+                <p><strong>Friday – Sunday</strong><br>2:00 pm – 2:00 am</p>
+                <p class="location-line">📍 Zgharta, Main Street</p>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- ===== CONTACT PAGE ===== -->
+<main id="contactPage" class="page">
+    <div class="inner-page">
+        <h2 class="inner-title">Let's Talk</h2>
+        <div class="contact-card">
+            <div class="contact-row"><i class="fas fa-phone-alt"></i><span>+961 76 419 154</span></div>
+            <div class="contact-row"><i class="fab fa-whatsapp"></i><span>+961 76 419 154 (WhatsApp)</span></div>
+            <div class="contact-row"><i class="fas fa-envelope"></i><span>hello@royaljuice.com</span></div>
+            <div class="contact-row"><i class="fab fa-instagram"></i><span>@royal_juice</span></div>
+            <a class="wa-link-btn" href="https://wa.me/96176419154?text=Hello!%20I'd%20like%20to%20place%20an%20order%20🙌" target="_blank" rel="noopener">
+                <i class="fab fa-whatsapp"></i> Chat on WhatsApp
+            </a>
+        </div>
+    </div>
+</main>
+
+<!-- ===== CART SIDEBAR ===== -->
+<aside class="cart-sidebar" id="cartSidebar">
+    <div class="cart-head">
+        <h3><i class="fas fa-bag-shopping"></i> Your Bag</h3>
+        <button class="close-cart" id="closeCartBtn">✕</button>
+    </div>
+    <div class="cart-body" id="cartItemsList">
+        <p class="empty-msg">Your bag is empty 🛍</p>
+    </div>
+    <div class="cart-foot" id="cartFooter" style="display:none">
+        <div class="total-row">
+            <span>Total</span>
+            <strong id="cartTotalAmount">$0.00</strong>
+        </div>
+        <button class="wa-order-btn" id="whatsappOrderBtn">
+            <i class="fab fa-whatsapp"></i> Checkout via WhatsApp
+        </button>
+        <button class="clear-bag-btn" id="clearCartBtn">Clear bag</button>
+    </div>
+</aside>
+<div class="cart-overlay" id="cartOverlay"></div>
+
+<!-- ===== SIZE BOTTOM SHEET ===== -->
+<div class="size-backdrop" id="sizeBackdrop"></div>
+<div class="size-sheet" id="sizeSheet">
+    <div class="sheet-handle"></div>
+    <div id="sizeSheetContent"><!-- rendered by JS --></div>
+</div>
+
+<!-- ===== CHECKOUT MODAL ===== -->
+<div class="checkout-backdrop" id="checkoutBackdrop"></div>
+<div class="checkout-modal" id="checkoutModal">
+    <div class="co-handle"></div>
+    <div class="co-inner">
+        <div class="co-emoji">🛍️</div>
+        <h3 class="co-title">Almost there!</h3>
+        <p class="co-sub">A couple of quick details and your order is on its way.</p>
+
+        <div class="co-field">
+            <label class="co-label" for="coNameInput">Your Name</label>
+            <input type="text" class="co-input" id="coNameInput" placeholder="e.g. Ahmad" autocomplete="name" maxlength="60">
+        </div>
+
+        <div class="co-field">
+            <label class="co-label">Order Type</label>
+            <div class="co-type-btns" id="coTypeBtns">
+                <button class="co-type-btn" data-type="Takeaway">🥡 Takeaway</button>
+                <button class="co-type-btn" data-type="Delivery">🛵 Delivery</button>
+                <button class="co-type-btn" data-type="Dine In">🪑 Dine In</button>
+            </div>
+        </div>
+
+        <button class="co-confirm-btn" id="coConfirmBtn">
+            <i class="fab fa-whatsapp"></i> Send Order via WhatsApp
+        </button>
+        <button class="co-cancel-btn" id="coCancelBtn">Cancel</button>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toastMsg"></div>
+
+<footer class="site-footer">
+    <p>© 2026 Aleco's Restaurant. All rights reserved.</p>
+    <p>Website designed &amp; developed by <a class="footer-link" href="https://maykelkhouryyammine.github.io/" target="_blank" rel="noopener">Maykel Yammine</a></p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
