@@ -272,8 +272,8 @@ body::after {
     width: 140px;
     max-width: 55vw;
     height: auto;
+    display: inline-block;  /* ensures centering with text-align */
     filter: drop-shadow(0 4px 12px rgba(210,160,60,0.3));
-    transition: transform 0.2s ease;
 }
 .menu-logo-large:hover {
     transform: scale(1.02);
