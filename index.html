@@ -19,11 +19,8 @@
         <div class="logo-area" id="logoHomeBtn">
             <svg class="logo-svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="24" cy="24" r="24" fill="rgba(210,160,60,0.12)"/>
-                <!-- Crown base -->
                 <rect x="10" y="30" width="28" height="4.5" rx="2.2" fill="#D2A03C"/>
-                <!-- Crown spikes -->
                 <polygon points="10,30 13,20 18,27 24,14 30,27 35,20 38,30" fill="#D2A03C"/>
-                <!-- Jewels on crown -->
                 <circle cx="24" cy="18" r="2.2" fill="#fff" opacity="0.9"/>
                 <circle cx="15.5" cy="25" r="1.4" fill="#fff" opacity="0.65"/>
                 <circle cx="32.5" cy="25" r="1.4" fill="#fff" opacity="0.65"/>
@@ -181,7 +178,7 @@
             <strong id="cartTotalAmount">$0.00</strong>
         </div>
         <button class="wa-order-btn" id="whatsappOrderBtn">
-            <i class="fab fa-whatsapp"></i> Order via WhatsApp
+            <i class="fab fa-whatsapp"></i> Checkout via WhatsApp
         </button>
         <button class="clear-bag-btn" id="clearCartBtn">Clear bag</button>
     </div>
@@ -195,11 +192,42 @@
     <div id="sizeSheetContent"><!-- rendered by JS --></div>
 </div>
 
+<!-- ===== CHECKOUT MODAL ===== -->
+<div class="checkout-backdrop" id="checkoutBackdrop"></div>
+<div class="checkout-modal" id="checkoutModal">
+    <div class="co-handle"></div>
+    <div class="co-inner">
+        <div class="co-emoji">🛍️</div>
+        <h3 class="co-title">Almost there!</h3>
+        <p class="co-sub">A couple of quick details and your order is on its way.</p>
+
+        <div class="co-field">
+            <label class="co-label" for="coNameInput">Your Name</label>
+            <input type="text" class="co-input" id="coNameInput" placeholder="e.g. Ahmad" autocomplete="name" maxlength="60">
+        </div>
+
+        <div class="co-field">
+            <label class="co-label">Order Type</label>
+            <div class="co-type-btns" id="coTypeBtns">
+                <button class="co-type-btn" data-type="Takeaway">🥡 Takeaway</button>
+                <button class="co-type-btn" data-type="Delivery">🛵 Delivery</button>
+                <button class="co-type-btn" data-type="Dine In">🪑 Dine In</button>
+            </div>
+        </div>
+
+        <button class="co-confirm-btn" id="coConfirmBtn">
+            <i class="fab fa-whatsapp"></i> Send Order via WhatsApp
+        </button>
+        <button class="co-cancel-btn" id="coCancelBtn">Cancel</button>
+    </div>
+</div>
+
 <!-- Toast -->
 <div class="toast" id="toastMsg"></div>
 
 <footer class="site-footer">
-    <p>© 2026 Royal Juice — good vibes only 🍹</p>
+    <p>© 2026 Aleco's Restaurant. All rights reserved.</p>
+    <p>Website designed &amp; developed by <a class="footer-link" href="https://maykelkhouryyammine.github.io/" target="_blank" rel="noopener">Maykel Yammine</a></p>
 </footer>
 
 <script src="script.js"></script>
