@@ -3,9 +3,10 @@
    ============================================================ */
 
 // ============================================================
-// 🔧 CONFIG — Replace with your Google Apps Script URL
+// CONFIG — Google Sheet (fetched via gviz API, no CORS issues)
 // ============================================================
-const SHEETS_API = "https://script.google.com/macros/s/AKfycbyeCW1nbF3wXQNiHKxVaqYEqE3YsEoGp-dlxkN-lqwnHrFhqXBEiyrddXf1O-T6NPxwig/exec";
+const SHEET_ID  = "1N7apz3BducRmDsAC00SfMFsEJOHISu1_JF8zs81swg";
+const SHEET_GID = "1143054748"; // Sheet tab ID from the URL
 
 // WhatsApp number
 const WA_NUMBER = "96176419154";
@@ -14,161 +15,109 @@ const WA_NUMBER = "96176419154";
 // CATEGORIES
 // ============================================================
 const CATEGORIES = [
-    {
-        id: "juices",
-        label: "Juices",
-        emoji: "🍊",
-        image: "https://images.unsplash.com/photo-1622597467836-f3e48ea3ff3b?w=600&auto=format&fit=crop"
-    },
-    {
-        id: "hot_drinks",
-        label: "Hot Drinks",
-        emoji: "☕",
-        image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&auto=format&fit=crop"
-    },
-    {
-        id: "crepes",
-        label: "Crêpes",
-        emoji: "🥞",
-        image: "https://images.unsplash.com/photo-1519676867240-f03562e64548?w=600&auto=format&fit=crop"
-    },
-    {
-        id: "cocktails",
-        label: "Cocktails",
-        emoji: "🍸",
-        image: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=600&auto=format&fit=crop"
-    },
-    {
-        id: "milkshakes",
-        label: "Milkshakes",
-        emoji: "🥤",
-        image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&auto=format&fit=crop"
-    },
-    {
-        id: "specialities",
-        label: "Specialities",
-        emoji: "✨",
-        image: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=600&auto=format&fit=crop"
-    }
+    { id:"juices",       label:"Juices",       emoji:"🍊", image:"https://images.unsplash.com/photo-1622597467836-f3e48ea3ff3b?w=600&auto=format&fit=crop" },
+    { id:"hot_drinks",   label:"Hot Drinks",   emoji:"☕", image:"https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&auto=format&fit=crop" },
+    { id:"crepes",       label:"Crêpes",       emoji:"🥞", image:"https://images.unsplash.com/photo-1519676867240-f03562e64548?w=600&auto=format&fit=crop" },
+    { id:"cocktails",    label:"Cocktails",    emoji:"🍸", image:"https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=600&auto=format&fit=crop" },
+    { id:"milkshakes",   label:"Milkshakes",   emoji:"🥤", image:"https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&auto=format&fit=crop" },
+    { id:"specialities", label:"Specialities", emoji:"✨", image:"https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=600&auto=format&fit=crop" }
 ];
 
 // ============================================================
-// FALLBACK MENU (real data from your menu images)
+// FALLBACK MENU — matches Google Sheet data exactly
 // ============================================================
 const FALLBACK_MENU = [
     // ── JUICES ──
-    {
-        id: "j1", name: "Orange Juice", category: "juices",
-        description: "Freshly squeezed oranges",
-        price_s: 1.5, price_m: 2.0, price_l: 2.5, price_fixed: null,
-        image: "https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?w=600&auto=format&fit=crop"
-    },
-    {
-        id: "j2", name: "Lemonade Juice", category: "juices",
-        description: "Freshly squeezed lemons, water, sugar",
-        price_s: 1.5, price_m: 2.0, price_l: 2.5, price_fixed: null,
-        image: "https://images.unsplash.com/photo-1465362649024-a4c32f5d20f5?w=600&auto=format&fit=crop"
-    },
-    {
-        id: "j3", name: "Strawberry Juice", category: "juices",
-        description: "Freshly juiced strawberries, pure and simple!",
-        price_s: 1.5, price_m: 2.0, price_l: 2.5, price_fixed: null,
-        image: "https://images.unsplash.com/photo-1560023907-5f339617ea30?w=600&auto=format&fit=crop"
-    },
-    {
-        id: "j4", name: "Fluffy Coffee", category: "juices",
-        description: "Instant coffee, milk, honey, chocolate syrup",
-        price_s: 2.0, price_m: 2.5, price_l: 3.0, price_fixed: null,
-        image: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=600&auto=format&fit=crop"
-    },
-    {
-        id: "j5", name: "Iced Irish Coffee", category: "juices",
-        description: "Instant coffee, heavy cream, Baileys / other flavors",
-        price_s: 2.5, price_m: 3.5, price_l: 4.0, price_fixed: null,
-        image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&auto=format&fit=crop"
-    },
+    { id:"j1", name:"Orange Juice",     category:"juices",
+      description:"Freshly squeezed oranges",
+      price_s:5,   price_m:5,   price_l:5,   price_fixed:null,
+      image:"https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?w=600&auto=format&fit=crop" },
+    { id:"j2", name:"Lemonade Juice",   category:"juices",
+      description:"Freshly squeezed lemons, water, sugar",
+      price_s:1.5, price_m:2,   price_l:2.5, price_fixed:null,
+      image:"https://images.unsplash.com/photo-1465362649024-a4c32f5d20f5?w=600&auto=format&fit=crop" },
+    { id:"j3", name:"Strawberry Juice", category:"juices",
+      description:"Freshly juiced strawberries, pure and simple!",
+      price_s:1.5, price_m:2,   price_l:2.5, price_fixed:null,
+      image:"https://images.unsplash.com/photo-1560023907-5f339617ea30?w=600&auto=format&fit=crop" },
+    { id:"j4", name:"Fluffy Coffee",    category:"juices",
+      description:"Instant coffee, milk, honey, chocolate syrup",
+      price_s:2,   price_m:2.5, price_l:3,   price_fixed:null,
+      image:"https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=600&auto=format&fit=crop" },
+    { id:"j5", name:"Iced Irish Coffee",category:"juices",
+      description:"Instant coffee, heavy cream, Baileys / other flavors",
+      price_s:2.5, price_m:3.5, price_l:4,   price_fixed:null,
+      image:"https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&auto=format&fit=crop" },
 
     // ── HOT DRINKS ──
-    {
-        id: "h1", name: "Coffee", category: "hot_drinks",
-        description: "Add chocolate for +$0.55",
-        price_s: null, price_m: null, price_l: null, price_fixed: 0.8,
-        image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=600&auto=format&fit=crop"
-    },
-    {
-        id: "h2", name: "Nescafé", category: "hot_drinks",
-        description: "",
-        price_s: null, price_m: null, price_l: null, price_fixed: 1.0,
-        image: "https://images.unsplash.com/photo-1517256064527-09c73fc73e38?w=600&auto=format&fit=crop"
-    },
-    {
-        id: "h3", name: "Cappuccino / Hot Chocolate", category: "hot_drinks",
-        description: "",
-        price_s: null, price_m: null, price_l: null, price_fixed: 1.0,
-        image: "https://images.unsplash.com/photo-1534778101976-62847782c213?w=600&auto=format&fit=crop"
-    },
+    { id:"h1", name:"Coffee",                    category:"hot_drinks",
+      description:"Add chocolate for +$0.55",
+      price_s:null, price_m:null, price_l:null, price_fixed:1,
+      image:"https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=600&auto=format&fit=crop" },
+    { id:"h2", name:"Nescafé",                   category:"hot_drinks",
+      description:"",
+      price_s:null, price_m:null, price_l:null, price_fixed:1,
+      image:"https://images.unsplash.com/photo-1517256064527-09c73fc73e38?w=600&auto=format&fit=crop" },
+    { id:"h3", name:"Cappuccino / Hot Chocolate", category:"hot_drinks",
+      description:"",
+      price_s:null, price_m:null, price_l:null, price_fixed:1,
+      image:"https://images.unsplash.com/photo-1534778101976-62847782c213?w=600&auto=format&fit=crop" },
 
-    // ── CRÊPES (placeholder — add your items in Google Sheet) ──
-    {
-        id: "cr1", name: "Coming Soon!", category: "crepes",
-        description: "Our crêpe menu is being crafted with love. Check back soon!",
-        price_s: null, price_m: null, price_l: null, price_fixed: 0,
-        image: "https://images.unsplash.com/photo-1519676867240-f03562e64548?w=600&auto=format&fit=crop"
-    },
+    // ── CRÊPES ──
+    { id:"cr1", name:"Sweet Nutella Crêpe",      category:"crepes",
+      description:"Warm crêpe with Nutella and banana",
+      price_s:null, price_m:null, price_l:null, price_fixed:4.5,
+      image:"https://images.unsplash.com/photo-1519676867240-f03562e64548?w=600&auto=format&fit=crop" },
+    { id:"cr2", name:"Strawberry Cream Crêpe",   category:"crepes",
+      description:"Fresh strawberries, whipped cream",
+      price_s:null, price_m:null, price_l:null, price_fixed:5,
+      image:"https://images.unsplash.com/photo-1519676867240-f03562e64548?w=600&auto=format&fit=crop" },
 
     // ── COCKTAILS ──
-    {
-        id: "c1", name: "Passion Mojito", category: "cocktails",
-        description: "Fresh mint, lime, rum, passion fruit",
-        price_s: null, price_m: null, price_l: null, price_fixed: 9.9,
-        image: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=600&auto=format&fit=crop"
-    },
-    {
-        id: "c2", name: "Berry Smash", category: "cocktails",
-        description: "Vodka, mixed berries, lemon, soda",
-        price_s: null, price_m: null, price_l: null, price_fixed: 8.5,
-        image: "https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=600&auto=format&fit=crop"
-    },
+    { id:"c1", name:"Passion Mojito", category:"cocktails",
+      description:"Fresh mint, lime, rum, passion fruit",
+      price_s:null, price_m:null, price_l:null, price_fixed:9.9,
+      image:"https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=600&auto=format&fit=crop" },
+    { id:"c2", name:"Berry Smash",    category:"cocktails",
+      description:"Vodka, mixed berries, lemon, soda",
+      price_s:null, price_m:null, price_l:null, price_fixed:8.5,
+      image:"https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=600&auto=format&fit=crop" },
 
     // ── MILKSHAKES ──
-    {
-        id: "m1", name: "Oreo Shake", category: "milkshakes",
-        description: "Vanilla ice cream, Oreo, whipped cream",
-        price_s: null, price_m: null, price_l: null, price_fixed: 6.9,
-        image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&auto=format&fit=crop"
-    },
-    {
-        id: "m2", name: "Strawberry Cheesecake", category: "milkshakes",
-        description: "Fresh strawberries, cheesecake bits",
-        price_s: null, price_m: null, price_l: null, price_fixed: 7.5,
-        image: "https://images.unsplash.com/photo-1579954115545-a95591f28bfc?w=600&auto=format&fit=crop"
-    },
+    { id:"m1", name:"Oreo Shake",           category:"milkshakes",
+      description:"Vanilla ice cream, Oreo, whipped cream",
+      price_s:null, price_m:null, price_l:null, price_fixed:6.9,
+      image:"https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&auto=format&fit=crop" },
+    { id:"m2", name:"Strawberry Cheesecake",category:"milkshakes",
+      description:"Fresh strawberries, cheesecake bits",
+      price_s:null, price_m:null, price_l:null, price_fixed:7.5,
+      image:"https://images.unsplash.com/photo-1579954115545-a95591f28bfc?w=600&auto=format&fit=crop" },
 
     // ── SPECIALITIES ──
-    {
-        id: "s1", name: "Royal Spritz", category: "specialities",
-        description: "Aperol, prosecco, orange zest",
-        price_s: null, price_m: null, price_l: null, price_fixed: 10.9,
-        image: "https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=600&auto=format&fit=crop"
-    },
-    {
-        id: "s2", name: "Crêpe Cocktail", category: "specialities",
-        description: "Layered cream liqueur, caramel drizzle",
-        price_s: null, price_m: null, price_l: null, price_fixed: 12.5,
-        image: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=600&auto=format&fit=crop"
-    }
+    { id:"s1", name:"Royal Spritz",   category:"specialities",
+      description:"Aperol, prosecco, orange zest",
+      price_s:null, price_m:null, price_l:null, price_fixed:10.9,
+      image:"https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=600&auto=format&fit=crop" },
+    { id:"s2", name:"Crêpe Cocktail", category:"specialities",
+      description:"Layered cream liqueur, caramel drizzle",
+      price_s:null, price_m:null, price_l:null, price_fixed:12.5,
+      image:"https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=600&auto=format&fit=crop" }
 ];
 
 // ============================================================
 // STATE
 // ============================================================
-let menuItems = [];
-let cart = [];
-let currentPage = "home";
-let selectedItem = null;
-let selectedSize = null;
-let activePillId = null;
-let pillObserver = null;
+let menuItems       = [];
+let cart            = [];
+let currentPage     = "home";
+let selectedItem    = null;
+let selectedSize    = null;
+let activePillId    = null;
+let pillObserver    = null;
+let itemsViewReady  = false;   // prevent re-rendering sections on every category tap
+let scrollLock      = false;   // prevent observer overriding pill click
+let scrollLockTimer = null;
+let selectedOrderType = null;  // checkout modal
 
 // ============================================================
 // DOM REFS
@@ -188,6 +137,7 @@ const pages = {
 function navigate(pageId) {
     if (!pages[pageId]) return;
     currentPage = pageId;
+
     Object.values(pages).forEach(p => p.classList.remove("active"));
     pages[pageId].classList.add("active");
 
@@ -195,40 +145,77 @@ function navigate(pageId) {
         el.classList.toggle("active", el.dataset.page === pageId);
     });
 
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top:0, behavior:"smooth" });
     closeCart();
     closeMobileNav();
 
     if (pageId === "menu") {
-        renderCategoryGrid();
+        // Always show category grid when entering menu via nav
+        showCategoryGrid();
     }
 }
 
 // ============================================================
-// FETCH MENU FROM GOOGLE SHEETS
+// FETCH MENU — Google Visualization API (CORS-free for public sheets)
 // ============================================================
 async function fetchMenu() {
     try {
-        const res = await fetch(SHEETS_API, { mode: "cors" });
-        if (!res.ok) throw new Error("not ok");
-        const raw = await res.json();
-        if (Array.isArray(raw) && raw.length > 0) {
-            menuItems = raw.map(normalizeItem);
+        const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${SHEET_GID}`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const text = await res.text();
+
+        // Strip the Google wrapper: /*O_o*/\ngoogle.visualization.Query.setResponse({...});
+        const match = text.match(/setResponse\((\{[\s\S]+\})\)/);
+        if (!match) throw new Error("Unexpected gviz format");
+
+        const gviz = JSON.parse(match[1]);
+        if (gviz.status !== "ok") throw new Error("gviz error: " + gviz.status);
+
+        // Map rows by column position (robust against header label variations)
+        const rows = gviz.table.rows;
+        const items = rows
+            .filter(row => row.c && row.c[1] && row.c[1].v) // must have a name
+            .map(row => {
+                const cell = i => (row.c && row.c[i] != null) ? row.c[i].v : null;
+                return {
+                    id:          cell(0),
+                    name:        cell(1),
+                    category:    cell(2),
+                    description: cell(3),
+                    price_s:     cell(4),
+                    price_m:     cell(5),
+                    price_l:     cell(6),
+                    price_fixed: cell(7),
+                    image_url:   cell(8),
+                    available:   cell(9)
+                };
+            });
+
+        if (items.length > 0) {
+            menuItems = items.map(normalizeItem);
+            console.log(`✅ Loaded ${menuItems.length} items from Google Sheets`);
         } else {
-            menuItems = FALLBACK_MENU.map(normalizeItem);
+            throw new Error("Empty sheet response");
         }
-    } catch {
+    } catch (err) {
+        console.warn("⚠️ Sheet fetch failed, using fallback:", err.message);
         menuItems = FALLBACK_MENU.map(normalizeItem);
     }
+    // Mark items view as needing re-render after data loads
+    itemsViewReady = false;
 }
 
 function normalizeItem(item) {
-    const ps = parseFloat(item.price_s) || null;
-    const pm = parseFloat(item.price_m) || null;
-    const pl = parseFloat(item.price_l) || null;
+    const ps = parseFloat(item.price_s)     || null;
+    const pm = parseFloat(item.price_m)     || null;
+    const pl = parseFloat(item.price_l)     || null;
     const pf = parseFloat(item.price_fixed ?? item.price) || null;
-    const hasSizes = !!(ps && pm && pl);
-    const displayPrice = hasSizes ? ps : pf;
+
+    // hasSizes = true only if all three S/M/L prices are set AND at least two differ
+    // (if all three are the same, treat as a fixed price for simplicity)
+    const hasSizes = !!(ps && pm && pl && !(ps === pm && pm === pl));
+    const displayPrice = hasSizes ? ps : (pf || ps || pm || pl);
 
     return {
         id:          String(item.id || crypto.randomUUID()),
@@ -237,25 +224,28 @@ function normalizeItem(item) {
         description: String(item.description || ""),
         image:       String(item.image_url || item.image || "https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=600&auto=format"),
         hasSizes,
-        prices:      hasSizes ? { s: ps, m: pm, l: pl } : null,
+        prices:      hasSizes ? { s:ps, m:pm, l:pl } : null,
         price:       displayPrice,
-        available:   item.available !== false && item.available !== "FALSE"
+        available:   item.available !== false && item.available !== "FALSE" && item.available !== 0
     };
 }
 
 // ============================================================
 // CATEGORY GRID
 // ============================================================
-function renderCategoryGrid() {
+function showCategoryGrid() {
     $("categoryGridView").classList.remove("hidden");
     $("itemsView").classList.add("hidden");
+    renderCategoryGrid();
+}
 
+function renderCategoryGrid() {
     const grid = $("catGrid");
     grid.innerHTML = "";
 
     CATEGORIES.forEach(cat => {
         const count = menuItems.filter(i => i.category === cat.id && i.available).length;
-        const tile = document.createElement("div");
+        const tile  = document.createElement("div");
         tile.className = "cat-tile";
         tile.innerHTML = `
             <div class="cat-tile-img" style="background-image:url('${cat.image}')"></div>
@@ -272,22 +262,25 @@ function renderCategoryGrid() {
 }
 
 // ============================================================
-// ITEMS VIEW (all sections stacked, scroll to selected)
+// ITEMS VIEW — render once, scroll to section on each open
 // ============================================================
 function showItemsView(focusCatId) {
     $("categoryGridView").classList.add("hidden");
     $("itemsView").classList.remove("hidden");
 
-    renderPills(focusCatId);
-    renderAllSections();
+    // Only render pills + sections once (until data refreshes)
+    if (!itemsViewReady) {
+        renderPills(focusCatId);
+        renderAllSections();
+        itemsViewReady = true;
+    } else {
+        // Just update the active pill without re-rendering everything
+        setActivePill(focusCatId, true);
+    }
 
-    // Scroll to the focused section after render
+    // Scroll to the requested section
     requestAnimationFrame(() => {
-        const el = document.querySelector(`[data-section="${focusCatId}"]`);
-        if (el) {
-            const offset = el.getBoundingClientRect().top + window.scrollY - 130;
-            window.scrollTo({ top: offset, behavior: "smooth" });
-        }
+        scrollToSection(focusCatId);
         setupScrollObserver();
     });
 }
@@ -295,40 +288,55 @@ function showItemsView(focusCatId) {
 // ── Pills ──
 function renderPills(activeCat) {
     const container = $("pillsScroll");
-    container.innerHTML = `
-        <span class="pill-btn back-pill" id="backToGridPill">← All Categories</span>
-    `;
-    $("backToGridPill").addEventListener("click", () => {
-        navigate("menu");
-        renderCategoryGrid();
-    });
+    container.innerHTML = "";
+
+    // Back button
+    const back = document.createElement("span");
+    back.className = "pill-btn back-pill";
+    back.textContent = "← All";
+    back.addEventListener("click", () => navigate("menu"));
+    container.appendChild(back);
 
     CATEGORIES.forEach(cat => {
         const btn = document.createElement("button");
         btn.className = "pill-btn" + (cat.id === activeCat ? " active" : "");
         btn.dataset.cat = cat.id;
         btn.textContent = `${cat.emoji} ${cat.label}`;
+
         btn.addEventListener("click", () => {
-            // Scroll to section
-            const el = document.querySelector(`[data-section="${cat.id}"]`);
-            if (el) {
-                const offset = el.getBoundingClientRect().top + window.scrollY - 130;
-                window.scrollTo({ top: offset, behavior: "smooth" });
-            }
+            // Immediately update active pill, lock observer briefly so it doesn't fight us
+            scrollLock = true;
+            clearTimeout(scrollLockTimer);
+            setActivePill(cat.id, true);
+            scrollToSection(cat.id);
+            scrollLockTimer = setTimeout(() => { scrollLock = false; }, 900);
         });
+
         container.appendChild(btn);
     });
+
+    activePillId = activeCat;
 }
 
-function setActivePill(catId) {
-    if (catId === activePillId) return;
+function setActivePill(catId, force = false) {
+    // If observer is trying to update while we're click-scrolling, ignore it
+    if (!force && scrollLock) return;
+    if (catId === activePillId && !force) return;
+
     activePillId = catId;
     document.querySelectorAll(".pill-btn[data-cat]").forEach(b => {
         b.classList.toggle("active", b.dataset.cat === catId);
     });
-    // Scroll pill into view
+    // Scroll the active pill into view in the horizontal scroll strip
     const active = document.querySelector(`.pill-btn[data-cat="${catId}"]`);
-    if (active) active.scrollIntoView({ inline: "center", behavior: "smooth" });
+    if (active) active.scrollIntoView({ inline:"center", behavior:"smooth", block:"nearest" });
+}
+
+function scrollToSection(catId) {
+    const el = document.querySelector(`[data-section="${catId}"]`);
+    if (!el) return;
+    const offset = el.getBoundingClientRect().top + window.scrollY - 136;
+    window.scrollTo({ top: Math.max(0, offset), behavior:"smooth" });
 }
 
 // ── All sections ──
@@ -337,15 +345,14 @@ function renderAllSections() {
     container.innerHTML = "";
 
     CATEGORIES.forEach(cat => {
-        const items = menuItems.filter(i => i.category === cat.id && i.available);
+        const items   = menuItems.filter(i => i.category === cat.id && i.available);
         const section = document.createElement("div");
-        section.className = "cat-section";
-        section.dataset.section = cat.id;
+        section.className        = "cat-section";
+        section.dataset.section  = cat.id;
 
         section.innerHTML = `
             <h2 class="cat-section-title">
-                <span class="s-emoji">${cat.emoji}</span>
-                ${cat.label}
+                <span class="s-emoji">${cat.emoji}</span>${cat.label}
             </h2>
             <div class="items-grid" id="grid-${cat.id}">
                 ${items.length === 0
@@ -367,7 +374,7 @@ function renderAllSections() {
                 openSizeSheet(item);
             } else {
                 addToCart(item, null, item.price);
-                showToast(`${item.name} added!`);
+                showToast(`${item.name} added! 🛍`);
             }
         });
     });
@@ -378,8 +385,7 @@ function renderItemCard(item) {
         ? `<div class="item-price"><span class="item-price-from">from</span>$${item.prices.s.toFixed(2)}</div>`
         : `<div class="item-price">$${(item.price || 0).toFixed(2)}</div>`;
 
-    // Don't show Add for $0 items (placeholder)
-    const btnHtml = item.price === 0
+    const btnHtml = (item.price === 0 || item.price == null)
         ? ``
         : `<button class="add-btn" data-id="${item.id}">
                <i class="fas fa-plus"></i> Add
@@ -406,15 +412,25 @@ function renderItemCard(item) {
     `;
 }
 
-// ── IntersectionObserver for active pill ──
+// ── IntersectionObserver — highlight pill as user scrolls ──
 function setupScrollObserver() {
     if (pillObserver) pillObserver.disconnect();
     const sections = document.querySelectorAll("[data-section]");
+
     pillObserver = new IntersectionObserver(entries => {
+        // Only update active pill if user is freely scrolling (not after a pill click)
+        if (scrollLock) return;
+        let best = null;
         entries.forEach(e => {
-            if (e.isIntersecting) setActivePill(e.target.dataset.section);
+            if (e.isIntersecting) {
+                if (!best || e.intersectionRatio > best.ratio) {
+                    best = { id: e.target.dataset.section, ratio: e.intersectionRatio };
+                }
+            }
         });
-    }, { rootMargin: "-30% 0px -60% 0px" });
+        if (best) setActivePill(best.id);
+    }, { rootMargin:"-25% 0px -55% 0px", threshold:[0, 0.1, 0.25, 0.5] });
+
     sections.forEach(s => pillObserver.observe(s));
 }
 
@@ -426,9 +442,9 @@ function openSizeSheet(item) {
     selectedSize = null;
 
     const SIZE_LABELS = {
-        s: { label: "Small",  sub: "Regular glass" },
-        m: { label: "Medium", sub: "Large glass" },
-        l: { label: "Large",  sub: "Extra large" }
+        s: { label:"Small",  sub:"Regular glass" },
+        m: { label:"Medium", sub:"Large glass" },
+        l: { label:"Large",  sub:"Extra large" }
     };
 
     $("sizeSheetContent").innerHTML = `
@@ -443,7 +459,7 @@ function openSizeSheet(item) {
             </div>
             <div class="ss-label">Choose your size</div>
             <div class="size-options" id="sizeOptions">
-                ${["s", "m", "l"].map(sz => `
+                ${["s","m","l"].map(sz => `
                     <div class="size-opt" data-size="${sz}" data-price="${item.prices[sz]}">
                         <div class="size-opt-left">
                             <div class="size-circle">${sz.toUpperCase()}</div>
@@ -468,9 +484,8 @@ function openSizeSheet(item) {
             document.querySelectorAll(".size-opt").forEach(o => o.classList.remove("selected"));
             opt.classList.add("selected");
             selectedSize = opt.dataset.size;
-            const btn = $("ssAddBtn");
+            const btn   = $("ssAddBtn");
             btn.disabled = false;
-            btn.textContent = `Add to Bag — $${parseFloat(opt.dataset.price).toFixed(2)}`;
             btn.innerHTML = `<i class="fas fa-bag-shopping"></i> Add to Bag — $${parseFloat(opt.dataset.price).toFixed(2)}`;
         });
     });
@@ -479,7 +494,7 @@ function openSizeSheet(item) {
         if (!selectedSize) return;
         const price = selectedItem.prices[selectedSize];
         addToCart(selectedItem, selectedSize, price);
-        showToast(`${selectedItem.name} (${selectedSize.toUpperCase()}) added!`);
+        showToast(`${selectedItem.name} (${selectedSize.toUpperCase()}) added! 🛍`);
         closeSizeSheet();
     });
 
@@ -493,7 +508,7 @@ function openSizeSheet(item) {
 function closeSizeSheet() {
     $("sizeSheet").classList.remove("open");
     $("sizeBackdrop").classList.remove("visible");
-    setTimeout(() => { $("sizeBackdrop").style.display = "none"; }, 300);
+    setTimeout(() => { $("sizeBackdrop").style.display = "none"; }, 320);
     selectedItem = null;
     selectedSize = null;
 }
@@ -502,17 +517,17 @@ function closeSizeSheet() {
 // CART LOGIC
 // ============================================================
 function addToCart(item, size, price) {
-    const key = `${item.id}-${size || "fixed"}`;
+    const key      = `${item.id}-${size || "fixed"}`;
     const existing = cart.find(i => i.key === key);
     if (existing) {
         existing.qty += 1;
     } else {
         cart.push({
-            key, id: item.id,
-            name: item.name,
+            key, id:item.id,
+            name:  item.name,
             image: item.image,
-            size: size ? size.toUpperCase() : null,
-            price, qty: 1
+            size:  size ? size.toUpperCase() : null,
+            price, qty:1
         });
     }
     updateCartUI();
@@ -530,7 +545,8 @@ function updateCartUI() {
         foot.style.display = "none";
         return;
     }
-    foot.style.display = "block";
+    foot.style.display = "flex";
+    foot.style.flexDirection = "column";
 
     let totalPrice = 0;
     list.innerHTML = cart.map((item, idx) => {
@@ -581,21 +597,6 @@ function clearCart() {
 }
 
 // ============================================================
-// WHATSAPP ORDER
-// ============================================================
-function sendWhatsAppOrder() {
-    if (!cart.length) { showToast("Your bag is empty!"); return; }
-    const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
-    let msg = "🍹 *Royal Juice Order*%0A%0A";
-    cart.forEach(i => {
-        const sizeStr = i.size ? ` (${i.size})` : "";
-        msg += `• ${i.name}${sizeStr} x${i.qty} → $${(i.price * i.qty).toFixed(2)}%0A`;
-    });
-    msg += `%0A*Total: $${total.toFixed(2)}*%0A%0AThank you! 🙌`;
-    window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`, "_blank");
-}
-
-// ============================================================
 // CART OPEN / CLOSE
 // ============================================================
 function openCart() {
@@ -605,6 +606,63 @@ function openCart() {
 function closeCart() {
     $("cartSidebar").classList.remove("open");
     $("cartOverlay").style.display = "none";
+}
+
+// ============================================================
+// CHECKOUT MODAL — name + order type before WhatsApp
+// ============================================================
+function openCheckoutModal() {
+    if (!cart.length) { showToast("Your bag is empty!"); return; }
+
+    // Reset
+    selectedOrderType = null;
+    $("coNameInput").value = "";
+    document.querySelectorAll(".co-type-btn").forEach(b => b.classList.remove("selected"));
+
+    // Show
+    $("checkoutBackdrop").classList.add("visible");
+    $("checkoutModal").classList.add("open");
+
+    // Focus name field after animation
+    setTimeout(() => { $("coNameInput").focus(); }, 380);
+}
+
+function closeCheckoutModal() {
+    $("checkoutModal").classList.remove("open");
+    $("checkoutBackdrop").classList.remove("visible");
+    selectedOrderType = null;
+}
+
+function confirmCheckoutOrder() {
+    const name = $("coNameInput").value.trim();
+    if (!name) {
+        showToast("Please enter your name ✏️");
+        $("coNameInput").focus();
+        return;
+    }
+    if (!selectedOrderType) {
+        showToast("Please choose an order type 📦");
+        return;
+    }
+
+    const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+    const lines  = [];
+    lines.push("🍹 *Royal Juice Order*");
+    lines.push(`👤 *Name:* ${name}`);
+    lines.push(`📦 *Type:* ${selectedOrderType}`);
+    lines.push("");
+    cart.forEach(i => {
+        const sz = i.size ? ` (${i.size})` : "";
+        lines.push(`• ${i.name}${sz} x${i.qty} → $${(i.price * i.qty).toFixed(2)}`);
+    });
+    lines.push("");
+    lines.push(`*Total: $${total.toFixed(2)}*`);
+    lines.push("Thank you! 🙌");
+
+    const msg = encodeURIComponent(lines.join("\n"));
+    closeCheckoutModal();
+    closeCart();
+    window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`, "_blank");
 }
 
 // ============================================================
@@ -629,7 +687,7 @@ function showToast(msg) {
     t.textContent = msg;
     t.classList.add("show");
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => t.classList.remove("show"), 2000);
+    toastTimer = setTimeout(() => t.classList.remove("show"), 2200);
 }
 
 // ============================================================
@@ -637,7 +695,7 @@ function showToast(msg) {
 // ============================================================
 function escHtml(str) {
     return String(str).replace(/[&<>"']/g, m => ({
-        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+        "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'"  :"&#39;"
     })[m]);
 }
 
@@ -661,7 +719,7 @@ function initEvents() {
     // Hamburger
     $("mobileMenuToggle").addEventListener("click", toggleMobileNav);
 
-    // Explore menu button (home page)
+    // Explore menu CTA
     $("exploreMenuBtn")?.addEventListener("click", () => navigate("menu"));
 
     // Cart
@@ -669,18 +727,53 @@ function initEvents() {
     $("closeCartBtn").addEventListener("click", closeCart);
     $("cartOverlay").addEventListener("click", closeCart);
     $("clearCartBtn").addEventListener("click", clearCart);
-    $("whatsappOrderBtn").addEventListener("click", sendWhatsAppOrder);
+
+    // Cart checkout button → opens modal instead of direct WhatsApp
+    $("whatsappOrderBtn").addEventListener("click", () => {
+        closeCart();
+        setTimeout(openCheckoutModal, 120); // slight delay so cart closes first
+    });
+
+    // Checkout modal
+    $("checkoutBackdrop").addEventListener("click", closeCheckoutModal);
+    $("coCancelBtn").addEventListener("click", closeCheckoutModal);
+    $("coConfirmBtn").addEventListener("click", confirmCheckoutOrder);
+
+    // Order type buttons
+    document.querySelectorAll(".co-type-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".co-type-btn").forEach(b => b.classList.remove("selected"));
+            btn.classList.add("selected");
+            selectedOrderType = btn.dataset.type;
+        });
+    });
+
+    // Allow pressing Enter on name field to jump to confirm
+    $("coNameInput").addEventListener("keydown", e => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            confirmCheckoutOrder();
+        }
+    });
 
     // Size sheet backdrop
     $("sizeBackdrop").addEventListener("click", closeSizeSheet);
 
-    // Swipe down to close size sheet
+    // Swipe-down to close size sheet
     let sheetStartY = 0;
     const sheet = $("sizeSheet");
-    sheet.addEventListener("touchstart", e => { sheetStartY = e.touches[0].clientY; }, { passive: true });
-    sheet.addEventListener("touchend", e => {
+    sheet.addEventListener("touchstart", e => { sheetStartY = e.touches[0].clientY; }, { passive:true });
+    sheet.addEventListener("touchend",   e => {
         if (e.changedTouches[0].clientY - sheetStartY > 80) closeSizeSheet();
-    }, { passive: true });
+    }, { passive:true });
+
+    // Swipe-down to close checkout modal
+    let coStartY = 0;
+    const coModal = $("checkoutModal");
+    coModal.addEventListener("touchstart", e => { coStartY = e.touches[0].clientY; }, { passive:true });
+    coModal.addEventListener("touchend",   e => {
+        if (e.changedTouches[0].clientY - coStartY > 80) closeCheckoutModal();
+    }, { passive:true });
 }
 
 // ============================================================
@@ -690,7 +783,7 @@ async function boot() {
     initEvents();
     await fetchMenu();
     updateCartUI();
-    if (currentPage === "menu") renderCategoryGrid();
+    if (currentPage === "menu") showCategoryGrid();
 }
 
 boot();
