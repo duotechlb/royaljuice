@@ -99,49 +99,26 @@ function navigate(pageId) {
 // ============================================================
 // FETCH MENU — from Google Sheets (requires sheet to be published to web)
 // ============================================================
+// ============================================================
+// FETCH MENU — from your private Apps Script
+// ============================================================
 async function fetchMenu() {
+    // 👇 Your new Apps Script URL
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzWQF5X9_UdzuhM745Obo2Q1qIlo1L92_RvE619z5tgzDkqgbdPqIssUqtkJhUc3Iy79A/exec";
+
     try {
-        const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${SHEET_GID}`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`HTTP ${res.status} – make sure your sheet is published to the web`);
-        
-        const text = await res.text();
-        const match = text.match(/setResponse\((\{[\s\S]+\})\)/);
-        if (!match) throw new Error("Invalid gviz response format");
-        
-        const gviz = JSON.parse(match[1]);
-        if (gviz.status !== "ok") throw new Error(`gviz error: ${gviz.status}`);
-        
-        const rows = gviz.table.rows;
-        if (!rows || rows.length === 0) throw new Error("Sheet is empty");
-        
-        const items = rows
-            .filter(row => row.c && row.c[1] && row.c[1].v) // name column must exist
-            .map(row => {
-                const cell = (i) => (row.c && row.c[i] != null) ? row.c[i].v : null;
-                return {
-                    id:          cell(0),
-                    name:        cell(1),
-                    category:    cell(2),
-                    description: cell(3),
-                    price_s:     cell(4),
-                    price_m:     cell(5),
-                    price_l:     cell(6),
-                    price_fixed: cell(7),
-                    image_url:   cell(8),
-                    available:   cell(9)
-                };
-            });
-        
-        if (items.length === 0) throw new Error("No valid items found in sheet");
-        
+        const res = await fetch(APPS_SCRIPT_URL);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const items = await res.json();
+
+        if (!items || items.length === 0) throw new Error("No items returned");
+
         menuItems = items.map(normalizeItem);
-        console.log(`✅ Loaded ${menuItems.length} items from Google Sheets`);
-        showToast("✅ Menu loaded from Google Sheets", 3000);
-        return;
+        console.log(`✅ Loaded ${menuItems.length} items from Apps Script`);
+        showToast("✅ Menu loaded from private sheet", 3000);
     } catch (err) {
-        console.error("❌ Google Sheets fetch failed:", err);
-        showToast("⚠️ Using fallback menu. Please publish your sheet to the web.", 5000);
+        console.error("❌ Apps Script fetch failed:", err);
+        showToast("⚠️ Could not load menu. Using fallback data.", 5000);
         menuItems = FALLBACK_MENU.map(normalizeItem);
     }
     itemsViewReady = false;
