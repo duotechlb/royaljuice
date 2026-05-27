@@ -56,7 +56,7 @@ body::after {
     z-index:9999;
 }
 
-/* Scrollbar */
+/* Scrollbar — global thin style */
 ::-webkit-scrollbar { width:4px; }
 ::-webkit-scrollbar-track { background:transparent; }
 ::-webkit-scrollbar-thumb { background:var(--amber); border-radius:4px; }
@@ -347,6 +347,8 @@ body::after {
     padding:.38rem 1rem; font-size:.78rem; font-weight:500;
     transition:.2s; cursor:pointer;
     white-space:nowrap;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
 .pill-btn:hover { border-color:var(--amber); color:var(--amber-light); }
 .pill-btn.active {
@@ -422,6 +424,8 @@ body::after {
     transition:.2s; letter-spacing:.2px;
     border:1px solid #333;
     flex-shrink:0;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
 .add-btn:hover { background:#1a1a1a; transform:scale(1.05); }
 .add-btn i { font-size:.65rem; }
@@ -480,7 +484,6 @@ body::after {
     object-fit:cover; flex-shrink:0;
     background:var(--surf2);
 }
-.ss-item-info {}
 .ss-item-name { font-weight:600; font-size:.95rem; }
 .ss-item-sub { font-size:.75rem; color:var(--text-muted); margin-top:2px; }
 
@@ -493,6 +496,7 @@ body::after {
     background:var(--surf2); border:2px solid var(--border);
     border-radius:.9rem; padding:.9rem 1.1rem;
     cursor:pointer; transition:.2s;
+    -webkit-tap-highlight-color: transparent;
 }
 .size-opt:hover { border-color:var(--amber); }
 .size-opt.selected { border-color:var(--amber); background:var(--amber-pale); }
@@ -553,21 +557,26 @@ body::after {
 }
 .contact-row:last-of-type { border-bottom:none; }
 .contact-row i { color:var(--amber); font-size:1rem; width:20px; text-align:center; }
+
+/* WhatsApp button — BLACK (contact page) */
 .wa-link-btn {
     display:inline-flex; align-items:center; gap:.6rem;
-    background:rgba(37,211,102,.12); border:1px solid var(--wa);
-    color:var(--wa); border-radius:50px;
+    background:#000; border:1px solid #333;
+    color:#fff; border-radius:50px;
     padding:.75rem 1.6rem; font-weight:600; font-size:.88rem;
     margin-top:1.2rem; transition:.2s;
 }
-.wa-link-btn:hover { background:rgba(37,211,102,.22); }
+.wa-link-btn:hover { background:#111; }
 
 /* ============================================================
    CART SIDEBAR
    ============================================================ */
 .cart-sidebar {
     position:fixed; top:0; right:-420px; width:min(400px,100vw);
-    height:100vh; z-index:1500;
+    /* Use dynamic viewport height so iOS browser bar doesn't cut off buttons */
+    height: 100vh;
+    height: 100dvh;
+    z-index:1500;
     background:var(--surf);
     border-left:1px solid var(--border2);
     display:flex; flex-direction:column;
@@ -579,6 +588,7 @@ body::after {
     padding:1.2rem 1.4rem;
     border-bottom:1px solid var(--border);
     display:flex; justify-content:space-between; align-items:center;
+    flex-shrink:0;
 }
 .cart-head h3 { font-weight:600; font-size:1rem; display:flex; align-items:center; gap:.5rem; }
 .close-cart {
@@ -590,7 +600,14 @@ body::after {
 }
 .close-cart:hover { color:var(--text); background:var(--surf3); }
 
-.cart-body { flex:1; overflow-y:auto; padding:1rem; }
+/* Cart body — scrollable, NO scrollbar track so it doesn't overlap items */
+.cart-body {
+    flex:1; overflow-y:auto; padding:1rem;
+    /* Hide scrollbar visually but keep scroll functionality */
+    scrollbar-width:none;
+}
+.cart-body::-webkit-scrollbar { display:none; }
+
 .empty-msg { text-align:center; color:var(--text-muted); padding:3rem 1rem; font-size:.88rem; }
 
 .cart-item {
@@ -611,39 +628,50 @@ body::after {
 .ci-controls { display:flex; align-items:center; gap:.4rem; margin-top:.5rem; }
 .ci-btn {
     background:var(--surf3); border:1px solid var(--border);
-    color:var(--text); width:26px; height:26px;
+    color:var(--text); width:28px; height:28px;
     border-radius:50%; font-size:.75rem;
     display:flex; align-items:center; justify-content:center;
     transition:.15s;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
 .ci-btn:hover { border-color:var(--amber); color:var(--amber); }
 .ci-btn.del { background:rgba(224,90,90,.1); border-color:rgba(224,90,90,.3); color:var(--red); }
-.ci-qty { font-size:.82rem; font-weight:600; min-width:20px; text-align:center; }
+.ci-qty { font-size:.82rem; font-weight:600; min-width:24px; text-align:center; }
 .ci-sub { font-size:.78rem; font-weight:700; color:var(--amber-light); margin-left:auto; align-self:center; flex-shrink:0; }
 
+/* Cart foot — always visible, never scrolls away */
 .cart-foot {
-    padding:1rem 1.4rem; border-top:1px solid var(--border);
+    padding:1rem 1.4rem;
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+    border-top:1px solid var(--border);
+    flex-shrink:0;
+    background:var(--surf);
 }
 .total-row {
     display:flex; justify-content:space-between; align-items:center;
-    margin-bottom:1rem; font-size:1rem;
+    margin-bottom:.9rem; font-size:1rem;
 }
 .total-row strong { color:var(--amber-light); font-size:1.1rem; font-family:'Playfair Display',serif; }
 
+/* WhatsApp order button — BLACK in cart */
 .wa-order-btn {
-    width:100%; background:var(--wa); color:#fff;
-    border:none; border-radius:50px;
+    width:100%; background:#000; color:#fff;
+    border:1px solid #333; border-radius:50px;
     padding:.85rem; font-size:.9rem; font-weight:700;
     display:flex; align-items:center; justify-content:center; gap:.5rem;
     transition:.2s; margin-bottom:.6rem;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
-.wa-order-btn:hover { filter:brightness(1.1); }
+.wa-order-btn:hover { background:#111; }
 
 .clear-bag-btn {
     width:100%; background:none; border:1px solid var(--border);
     color:var(--text-muted); border-radius:50px;
     padding:.65rem; font-size:.82rem;
     transition:.2s;
+    -webkit-tap-highlight-color: transparent;
 }
 .clear-bag-btn:hover { border-color:var(--red); color:var(--red); }
 
@@ -652,6 +680,112 @@ body::after {
     background:rgba(0,0,0,.55);
     display:none;
 }
+
+/* ============================================================
+   CHECKOUT MODAL
+   ============================================================ */
+.checkout-backdrop {
+    position:fixed; inset:0; z-index:2100;
+    background:rgba(0,0,0,.7);
+    opacity:0; pointer-events:none;
+    transition:opacity .3s ease;
+}
+.checkout-backdrop.visible { opacity:1; pointer-events:all; }
+
+.checkout-modal {
+    position:fixed; bottom:0; left:0; right:0; z-index:2101;
+    background:var(--surf);
+    border-radius:1.5rem 1.5rem 0 0;
+    border-top:1px solid var(--border2);
+    transform:translateY(100%);
+    transition:transform .35s cubic-bezier(.32,.72,0,1);
+    max-height:92vh; overflow-y:auto;
+    padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+    scrollbar-width:none;
+}
+.checkout-modal::-webkit-scrollbar { display:none; }
+.checkout-modal.open { transform:translateY(0); }
+
+.co-handle {
+    width:40px; height:4px;
+    background:rgba(255,255,255,.18);
+    border-radius:4px; margin:1rem auto .5rem;
+}
+
+.co-inner { padding:.5rem 1.5rem 1.5rem; }
+
+.co-emoji {
+    font-size:2.2rem; text-align:center;
+    margin-bottom:.6rem;
+}
+
+.co-title {
+    font-family:'Playfair Display', serif;
+    font-size:1.5rem; font-weight:700;
+    text-align:center; color:var(--text);
+    margin-bottom:.3rem;
+}
+
+.co-sub {
+    font-size:.83rem; color:var(--text-muted);
+    text-align:center; margin-bottom:1.5rem;
+}
+
+.co-field { margin-bottom:1.2rem; }
+
+.co-label {
+    display:block; font-size:.75rem; font-weight:600;
+    color:var(--text-muted); text-transform:uppercase; letter-spacing:.5px;
+    margin-bottom:.5rem;
+}
+
+.co-input {
+    width:100%; background:var(--surf2);
+    border:1.5px solid var(--border2); border-radius:.8rem;
+    padding:.8rem 1rem; color:var(--text);
+    font-size:.95rem; font-family:inherit;
+    transition:.2s;
+}
+.co-input:focus { outline:none; border-color:var(--amber); }
+.co-input::placeholder { color:var(--text-muted); }
+
+.co-type-btns {
+    display:grid; grid-template-columns:repeat(3, 1fr); gap:.5rem;
+}
+
+.co-type-btn {
+    background:var(--surf2); border:1.5px solid var(--border);
+    color:var(--text-dim); border-radius:.8rem;
+    padding:.7rem .4rem; font-size:.78rem; font-weight:500;
+    transition:.2s; text-align:center;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+.co-type-btn:hover { border-color:var(--amber); color:var(--amber-light); }
+.co-type-btn.selected {
+    background:var(--amber-pale); border-color:var(--amber);
+    color:var(--amber-light); font-weight:600;
+}
+
+.co-confirm-btn {
+    width:100%; background:#000; color:#fff;
+    border:1px solid #333; border-radius:50px;
+    padding:.9rem; font-size:.95rem; font-weight:700;
+    display:flex; align-items:center; justify-content:center; gap:.6rem;
+    transition:.2s; margin-top:1.4rem; margin-bottom:.6rem;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+.co-confirm-btn:hover { background:#111; }
+.co-confirm-btn i { color:var(--wa); font-size:1rem; }
+
+.co-cancel-btn {
+    width:100%; background:none; border:1px solid var(--border);
+    color:var(--text-muted); border-radius:50px;
+    padding:.65rem; font-size:.82rem;
+    transition:.2s;
+}
+.co-cancel-btn:hover { border-color:var(--red); color:var(--red); }
 
 /* ============================================================
    TOAST
@@ -674,7 +808,14 @@ body::after {
     text-align:center; padding:2rem;
     border-top:1px solid var(--border);
     font-size:.75rem; color:var(--text-muted);
+    display:flex; flex-direction:column; gap:.35rem;
+    line-height:1.6;
 }
+.footer-link {
+    color:var(--amber);
+    transition:.2s;
+}
+.footer-link:hover { color:var(--amber-light); }
 
 /* ---------- HIDDEN ---------- */
 .hidden { display:none !important; }
@@ -710,4 +851,7 @@ body::after {
     .add-btn { padding:.32rem .7rem; font-size:.68rem; }
     .cat-section { padding:1.5rem .9rem .8rem; }
     .pills-bar { top:62px; }
+    /* Larger tap targets on mobile for co-type-btns */
+    .co-type-btn { padding:.85rem .3rem; font-size:.75rem; }
+    .co-confirm-btn { padding:1rem; font-size:1rem; }
 }
