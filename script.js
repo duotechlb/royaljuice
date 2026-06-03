@@ -8,7 +8,7 @@
 // ⚠️ IMPORTANT: Paste your FULL Apps Script URL below.
 //    The link you sent me was cut off, so I could not include the whole thing.
 //    It should look like: https://script.google.com/macros/s/AKfycb..../exec
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzWQF5X9_UdzuhM745Obo2Q1qIlo1L92_RvE619z5tgzDkqgbdPqIssUqtkJhUc3Iy79A/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyAuUTvIJKa_eOYMbqILTfvw6S9M0DTJ0U_cV6HE0iD100dEdO8n6rESlOufpPlBGH-Yw/exec";
 const APPS_SCRIPT_SECRET_KEY = "rjuice_2026_xK9m"; // Must match the secret key in your Apps Script
 const WA_NUMBER       = "96176419154";
 
