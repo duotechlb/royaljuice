@@ -8,7 +8,7 @@
 // ⚠️ IMPORTANT: Paste your FULL Apps Script URL below.
 //    The link you sent me was cut off, so I could not include the whole thing.
 //    It should look like: https://script.google.com/macros/s/AKfycb..../exec
-const APPS_SCRIPT_URL = "PASTE_YOUR_FULL_APPS_SCRIPT_URL_HERE";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzWQF5X9_UdzuhM745Obo2Q1qIlo1L92_RvE619z5tgzDkqgbdPqIssUqtkJhUc3Iy79A/exec";
 const WA_NUMBER       = "96176419154";
 
 // ============================================================
