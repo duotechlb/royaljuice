@@ -9,6 +9,7 @@
 //    The link you sent me was cut off, so I could not include the whole thing.
 //    It should look like: https://script.google.com/macros/s/AKfycb..../exec
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzWQF5X9_UdzuhM745Obo2Q1qIlo1L92_RvE619z5tgzDkqgbdPqIssUqtkJhUc3Iy79A/exec";
+const APPS_SCRIPT_SECRET_KEY = "rjuice_2026_xK9m"; // Must match the secret key in your Apps Script
 const WA_NUMBER       = "96176419154";
 
 // ============================================================
@@ -36,7 +37,7 @@ const FALLBACK_MENU = [
     { id:"j5",  name:"Kiwi Juice",          category:"juices",      description:"Fresh kiwi, naturally sweet and tangy",              price_s:null, price_m:null, price_l:null, price_fixed:3.5,  image_url:"https://images.unsplash.com/photo-1638437632573-61bbe0fd3ae8?w=600&auto=format&fit=crop" },
     { id:"j6",  name:"Pineapple Juice",     category:"juices",      description:"Fresh pressed pineapple",                            price_s:null, price_m:null, price_l:null, price_fixed:3.5,  image_url:"https://images.unsplash.com/photo-1490323914169-4b57a4fe1319?w=600&auto=format&fit=crop" },
     { id:"j7",  name:"Iced Irish Coffee",   category:"juices",      description:"Instant coffee, heavy cream, Baileys/other flavors", price_s:null, price_m:null, price_l:null, price_fixed:4,    image_url:"https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&auto=format&fit=crop" },
-    // ── Cold Drinks ───────────────────────────────────────────────────────────
+    // ── Cold Drinks ─��─────────────────────────────────────────────────────────
     { id:"cd1", name:"Water (0.33L)",       category:"cold_drinks", description:"Small still water",                                  price_s:null, price_m:null, price_l:null, price_fixed:0.5,  image_url:"https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=600&auto=format&fit=crop" },
     { id:"cd2", name:"Water (Small)",       category:"cold_drinks", description:"",                                                   price_s:null, price_m:null, price_l:null, price_fixed:1,    image_url:"https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=600&auto=format&fit=crop" },
     // ── Hot Drinks ────────────────────────────────────────────────────────────
@@ -126,7 +127,9 @@ async function fetchMenu() {
             throw new Error("Apps Script URL not set — using the built-in menu");
         }
 
-        const res = await fetch(APPS_SCRIPT_URL);
+        // Add secret key as query parameter
+        const url = `${APPS_SCRIPT_URL}?key=${encodeURIComponent(APPS_SCRIPT_SECRET_KEY)}`;
+        const res = await fetch(url);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
 
