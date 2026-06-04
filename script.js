@@ -20,8 +20,8 @@ const CATEGORIES = [
     { id:"cold_drinks",  label:"Cold Drinks",  emoji:"💧", image:"https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=600&auto=format&fit=crop" },
     { id:"hot_drinks",   label:"Hot Drinks",   emoji:"☕", image:" https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/hotdrinks.webp" },
     { id:"crepes",       label:"Crêpes",       emoji:"🥞", image:" https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c.webp" },
-    { id:"cocktails",    label:"Cocktails",    emoji:"🍸", image:" https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/cocktail.webp" },
-    { id:"milkshakes",   label:"Milkshakes",   emoji:"🥤", image:" https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/milkshakes.webp" },
+    { id:"cocktails",    label:"Cocktails",    emoji:"🍸", image:" https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c1.webp" },
+    { id:"milkshakes",   label:"Milkshakes",   emoji:"🥤", image:" https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/m1.jpg" },
     { id:"specialities", label:"Specialities", emoji:"✨", image:" https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/s3.jpg" }
 ];
 
