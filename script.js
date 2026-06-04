@@ -1,15 +1,10 @@
 /* ============================================================
-   ROYAL JUICE — script.js
+   ROYAL JUICE — script.js (with updated fallback menu)
    ============================================================ */
 
-// ============================================================
-// CONFIG
-// ============================================================
-// ⚠️ IMPORTANT: Paste your FULL Apps Script URL below.
-//    The link you sent me was cut off, so I could not include the whole thing.
-//    It should look like: https://script.google.com/macros/s/AKfycb..../exec
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyAuUTvIJKa_eOYMbqILTfvw6S9M0DTJ0U_cV6HE0iD100dEdO8n6rESlOufpPlBGH-Yw/exec";
-const APPS_SCRIPT_SECRET_KEY = "rjuice_2026_xK9m"; // Must match the secret key in your Apps Script
+
+
 const WA_NUMBER       = "96176419154";
 
 // ============================================================
@@ -26,45 +21,48 @@ const CATEGORIES = [
 ];
 
 // ============================================================
-// FALLBACK MENU — used only if Apps Script fetch fails
+// FALLBACK MENU — exact copy of your Google Sheet (used if fetch fails)
 // ============================================================
 const FALLBACK_MENU = [
-    // ── Juices (S / M / L) ───────────────────────────────────────────────────
-    { id:"j1",  name:"Orange Juice",        category:"juices",      description:"Freshly squeezed oranges",                           price_s:2,    price_m:3,    price_l:4,    price_fixed:null, image_url:"https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?w=600&auto=format&fit=crop" },
-    { id:"j2",  name:"Lemonade Juice",      category:"juices",      description:"Freshly squeezed lemons, water, sugar",              price_s:2.5,  price_m:3,    price_l:3.5,  price_fixed:null, image_url:"https://images.unsplash.com/photo-1465362649024-a4c32f5d20f5?w=600&auto=format&fit=crop" },
-    { id:"j3",  name:"Strawberry Juice",    category:"juices",      description:"Freshly juiced strawberries, pure and simple!",      price_s:1.5,  price_m:2,    price_l:2.5,  price_fixed:null, image_url:"https://images.unsplash.com/photo-1560023907-5f339617ea30?w=600&auto=format&fit=crop" },
-    { id:"j4",  name:"Mango Juice",         category:"juices",      description:"Fresh tropical mango, blended smooth",               price_s:null, price_m:null, price_l:null, price_fixed:3.5,  image_url:"https://images.unsplash.com/photo-1623065422902-30a2d299bbe4?w=600&auto=format&fit=crop" },
-    { id:"j5",  name:"Kiwi Juice",          category:"juices",      description:"Fresh kiwi, naturally sweet and tangy",              price_s:null, price_m:null, price_l:null, price_fixed:3.5,  image_url:"https://images.unsplash.com/photo-1638437632573-61bbe0fd3ae8?w=600&auto=format&fit=crop" },
-    { id:"j6",  name:"Pineapple Juice",     category:"juices",      description:"Fresh pressed pineapple",                            price_s:null, price_m:null, price_l:null, price_fixed:3.5,  image_url:"https://images.unsplash.com/photo-1490323914169-4b57a4fe1319?w=600&auto=format&fit=crop" },
-    { id:"j7",  name:"Iced Irish Coffee",   category:"juices",      description:"Instant coffee, heavy cream, Baileys/other flavors", price_s:null, price_m:null, price_l:null, price_fixed:4,    image_url:"https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&auto=format&fit=crop" },
-    // ── Cold Drinks ─��─────────────────────────────────────────────────────────
-    { id:"cd1", name:"Water (0.33L)",       category:"cold_drinks", description:"Small still water",                                  price_s:null, price_m:null, price_l:null, price_fixed:0.5,  image_url:"https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=600&auto=format&fit=crop" },
-    { id:"cd2", name:"Water (Small)",       category:"cold_drinks", description:"",                                                   price_s:null, price_m:null, price_l:null, price_fixed:1,    image_url:"https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=600&auto=format&fit=crop" },
-    // ── Hot Drinks ────────────────────────────────────────────────────────────
-    { id:"h1",  name:"Coffee",              category:"hot_drinks",  description:"Add chocolate for +$0.55",                           price_s:null, price_m:null, price_l:null, price_fixed:1,    image_url:"https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=600&auto=format&fit=crop" },
-    { id:"h2",  name:"Nescafé",             category:"hot_drinks",  description:"",                                                   price_s:null, price_m:null, price_l:null, price_fixed:1.5,  image_url:"https://images.unsplash.com/photo-1517256064527-09c73fc73e38?w=600&auto=format&fit=crop" },
-    { id:"h3",  name:"Cappuccino",          category:"hot_drinks",  description:"",                                                   price_s:null, price_m:null, price_l:null, price_fixed:1.5,  image_url:"https://images.unsplash.com/photo-1534778101976-62847782c213?w=600&auto=format&fit=crop" },
-    { id:"h4",  name:"Hot Chocolate",       category:"hot_drinks",  description:"",                                                   price_s:null, price_m:null, price_l:null, price_fixed:1.5,  image_url:"https://images.unsplash.com/photo-1542990253-0d0f5be5f0ed?w=600&auto=format&fit=crop" },
-    // ── Crêpes ────────────────────────────────────────────────────────────────
-    { id:"cr1", name:"Nutella Crêpe",       category:"crepes",      description:"Warm crêpe filled with Nutella",                     price_s:null, price_m:null, price_l:null, price_fixed:5.5,  image_url:"https://images.unsplash.com/photo-1519676867240-f03562e64548?w=600&auto=format&fit=crop" },
-    { id:"cr2", name:"Kinder Crêpe",        category:"crepes",      description:"Creamy Kinder filling, melted magic",                price_s:null, price_m:null, price_l:null, price_fixed:5.5,  image_url:"https://images.unsplash.com/photo-1519676867240-f03562e64548?w=600&auto=format&fit=crop" },
-    { id:"cr3", name:"Lotus Crêpe",         category:"crepes",      description:"Biscoff spread, golden and irresistible",            price_s:null, price_m:null, price_l:null, price_fixed:4.5,  image_url:"https://images.unsplash.com/photo-1519676867240-f03562e64548?w=600&auto=format&fit=crop" },
-    { id:"cr4", name:"Oreo Crêpe",          category:"crepes",      description:"Crushed Oreo, cream filling",                        price_s:null, price_m:null, price_l:null, price_fixed:5.5,  image_url:"https://images.unsplash.com/photo-1519676867240-f03562e64548?w=600&auto=format&fit=crop" },
-    { id:"cr5", name:"Fettuccini Crêpe",    category:"crepes",      description:"Rich fettuccini-style creamy crêpe",                 price_s:null, price_m:null, price_l:null, price_fixed:5.5,  image_url:"https://images.unsplash.com/photo-1519676867240-f03562e64548?w=600&auto=format&fit=crop" },
-    { id:"cr6", name:"Mix Crêpe",           category:"crepes",      description:"A mix of our favorite fillings",                     price_s:null, price_m:null, price_l:null, price_fixed:6,    image_url:"https://images.unsplash.com/photo-1519676867240-f03562e64548?w=600&auto=format&fit=crop" },
-    { id:"cr7", name:"Fluo Crêpe",          category:"crepes",      description:"Vibrant colorful fluo crêpe",                        price_s:null, price_m:null, price_l:null, price_fixed:7,    image_url:"https://images.unsplash.com/photo-1519676867240-f03562e64548?w=600&auto=format&fit=crop" },
-    { id:"cr8", name:"Dark Crêpe",          category:"crepes",      description:"Dark chocolate crêpe",                               price_s:null, price_m:null, price_l:null, price_fixed:4.5,  image_url:"https://images.unsplash.com/photo-1519676867240-f03562e64548?w=600&auto=format&fit=crop" },
-    { id:"cr9", name:"White Crêpe",         category:"crepes",      description:"White chocolate crêpe",                              price_s:null, price_m:null, price_l:null, price_fixed:4,    image_url:"https://images.unsplash.com/photo-1519676867240-f03562e64548?w=600&auto=format&fit=crop" },
-    // ── Cocktails ─────────────────────────────────────────────────────────────
-    { id:"c1",  name:"Passion Mojito",      category:"cocktails",   description:"Fresh mint, lime, rum, passion fruit — add chocolate +$1",  price_s:null, price_m:null, price_l:null, price_fixed:9.9,  image_url:"https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=600&auto=format&fit=crop" },
-    { id:"c2",  name:"Berry Smash",         category:"cocktails",   description:"Vodka, mixed berries, lemon, soda — add chocolate +$1",     price_s:null, price_m:null, price_l:null, price_fixed:8.5,  image_url:"https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=600&auto=format&fit=crop" },
-    // ── Milkshakes (one size — $3.50) ────────────────────────────────────────
-    { id:"m1",  name:"Oreo Shake",          category:"milkshakes",  description:"Vanilla ice cream, Oreo, whipped cream",                    price_s:null, price_m:null, price_l:null, price_fixed:3.5,  image_url:"https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&auto=format&fit=crop" },
-    { id:"m2",  name:"Strawberry Cheesecake", category:"milkshakes", description:"Fresh strawberries, cheesecake bits",                      price_s:null, price_m:null, price_l:null, price_fixed:3.5,  image_url:"https://images.unsplash.com/photo-1579954115545-a95591f28bfc?w=600&auto=format&fit=crop" },
-    // ── Specialities (S=$4 / M=$5 / L=$6) ───────────────────────────────────
-    { id:"s1",  name:"Royal Spritz",        category:"specialities", description:"Aperol, prosecco, orange zest",                            price_s:4, price_m:5, price_l:6, price_fixed:null, image_url:"https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=600&auto=format&fit=crop" },
-    { id:"s2",  name:"Crêpe Cocktail",      category:"specialities", description:"Layered cream liqueur, caramel drizzle",                   price_s:4, price_m:5, price_l:6, price_fixed:null, image_url:"https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=600&auto=format&fit=crop" },
-    { id:"s3",  name:"Crêpe Nutella",       category:"specialities", description:"Layered nutella crêpe cocktail",                           price_s:4, price_m:5, price_l:6, price_fixed:null, image_url:"https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=600&auto=format&fit=crop" }
+    // ── Juices (S / M / L) ─────────────────────────────────────────
+    { id:"j1", name:"Orange Juice", category:"juices", description:"Freshly squeezed oranges", price_s:2.00, price_m:3.00, price_l:4.00, price_fixed:null, image_url:"https://raw.githubusercontent.com/alecosrestaurant/alecosrestaurant.github.io/main/orange.webp", available:true },
+    { id:"j2", name:"Lemonade Juice", category:"juices", description:"Freshly squeezed lemons, water, sugar", price_s:2.50, price_m:3.00, price_l:3.50, price_fixed:null, image_url:"https://raw.githubusercontent.com/alecosrestaurant/alecosrestaurant.github.io/main/lemonade.webp", available:true },
+    { id:"j3", name:"Strawberry Juice", category:"juices", description:"Freshly juiced strawberries, pure and simple!", price_s:1.50, price_m:2.00, price_l:2.50, price_fixed:null, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/j3.webp", available:true },
+    { id:"j4", name:"Mango Juice", category:"juices", description:"Fresh tropical mango, blended smooth", price_s:null, price_m:null, price_l:null, price_fixed:3.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/j4.webp", available:true },
+    { id:"j5", name:"Kiwi Juice", category:"juices", description:"Fresh kiwi, naturally sweet and tangy", price_s:null, price_m:null, price_l:null, price_fixed:3.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/j5.webp", available:true },
+    { id:"j6", name:"Pineapple Juice", category:"juices", description:"Fresh pressed pineapple", price_s:null, price_m:null, price_l:null, price_fixed:3.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/j6.webp", available:true },
+    { id:"j7", name:"Iced Irish Coffee", category:"juices", description:"Instant coffee, heavy cream, Baileys/other flavors", price_s:null, price_m:null, price_l:null, price_fixed:4.00, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/j7.webp", available:true },
+    // ── Cold Drinks (fixed price) ─────────────────────────────────
+    { id:"cd1", name:"Water (Small)", category:"cold_drinks", description:"", price_s:null, price_m:null, price_l:null, price_fixed:0.33, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/cd1-2.webp", available:true },
+    { id:"cd2", name:"Water (Large)", category:"cold_drinks", description:"", price_s:null, price_m:null, price_l:null, price_fixed:1.00, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/cd1-2.webp", available:true },
+    // ── Hot Drinks (fixed price) ─────────────────────────────────
+    { id:"h1", name:"Coffee", category:"hot_drinks", description:"With Water Small", price_s:null, price_m:null, price_l:null, price_fixed:1.00, image_url:"https://github.com/alecosrestaurant/alecosrestaurant.github.io/raw/main/espressso.webp", available:true },
+    { id:"h2", name:"Nescafé", category:"hot_drinks", description:"", price_s:null, price_m:null, price_l:null, price_fixed:1.50, image_url:"https://raw.githubusercontent.com/alecosrestaurant/alecosrestaurant.github.io/main/nescafe.webp", available:true },
+    { id:"h3", name:"Cappuccino", category:"hot_drinks", description:"", price_s:null, price_m:null, price_l:null, price_fixed:1.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/h3.webp", available:true },
+    { id:"h4", name:"Hot Chocolate", category:"hot_drinks", description:"", price_s:null, price_m:null, price_l:null, price_fixed:1.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/h4.webp", available:true },
+    // ── Crêpes (fixed price) ─────────────────────────────────────
+    { id:"cr1", name:"Lotus Crêpe", category:"crepes", description:"Biscoff spread, golden and irresistible", price_s:null, price_m:null, price_l:null, price_fixed:4.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c.webp", available:true },
+    { id:"cr2", name:"Dark Crêpe", category:"crepes", description:"Dark chocolate crêpe", price_s:null, price_m:null, price_l:null, price_fixed:4.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c.webp", available:true },
+    { id:"cr3", name:"White Crêpe", category:"crepes", description:"White chocolate crêpe", price_s:null, price_m:null, price_l:null, price_fixed:4.00, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c.webp", available:true },
+    { id:"cr4", name:"Nutella Crêpe", category:"crepes", description:"Warm crêpe filled with Nutella", price_s:null, price_m:null, price_l:null, price_fixed:5.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c.webp", available:true },
+    { id:"cr5", name:"Kinder Crêpe", category:"crepes", description:"Creamy Kinder filling, melted magic", price_s:null, price_m:null, price_l:null, price_fixed:5.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c.webp", available:true },
+    { id:"cr6", name:"Oreo Crêpe", category:"crepes", description:"Crushed Oreo, cream filling", price_s:null, price_m:null, price_l:null, price_fixed:5.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c.webp", available:true },
+    { id:"cr7", name:"Fettuccini Crêpe", category:"crepes", description:"Rich fettuccini-style creamy crêpe", price_s:null, price_m:null, price_l:null, price_fixed:5.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c.webp", available:true },
+    { id:"cr8", name:"Mix Crêpe", category:"crepes", description:"A mix of our favorite fillings", price_s:null, price_m:null, price_l:null, price_fixed:6.00, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c.webp", available:true },
+    { id:"cr9", name:"Fluo Crêpe", category:"crepes", description:"Vibrant colorful fluo crêpe", price_s:null, price_m:null, price_l:null, price_fixed:7.00, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c.webp", available:true },
+    // ── Cocktails (S / M / L) ────────────────────────────────────
+    { id:"c1", name:"Fruit Smoothie Cocktail", category:"cocktails", description:"Avocado, Strawberry, Banana, kiwi, Mango, Pineapple...", price_s:4, price_m:5, price_l:6, price_fixed:null, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c1.jpg", available:true },
+    { id:"c2", name:"Avocado Cocktail", category:"cocktails", description:"Avocado, Lime Juice, Honey/Chocolate", price_s:5, price_m:5.5, price_l:6.5, price_fixed:null, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/avocat-cocktail.jpg", available:true },
+    { id:"c3", name:"Brownie Cocktail", category:"cocktails", description:"Brownie, Fruits, Honey, Chocolate Syrup", price_s:4, price_m:5, price_l:6, price_fixed:null, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c3.webp", available:true },
+    // ── Milkshakes (fixed price) ─────────────────────────────────
+    { id:"m1", name:"Decadent Chocolate", category:"milkshakes", description:"Chocolate Ice Cream, Milk, Chocolate Syrup", price_s:null, price_m:null, price_l:null, price_fixed:3.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/m1.jpg", available:true },
+    { id:"m2", name:"Vanilla - Nutella", category:"milkshakes", description:"Vanilla Ice Cream, Milk, Nutella, Vanilla Extract", price_s:null, price_m:null, price_l:null, price_fixed:3.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/m2.jpg", available:true },
+    { id:"m3", name:"Refreshing Strawberry/Chocolate Iced Latte", category:"milkshakes", description:"Strawberry Ice Cream, Milk, Fresh Strawberries, Chocolate Syrup/Instant Coffee", price_s:null, price_m:null, price_l:null, price_fixed:3.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/m3.jpg", available:true },
+    { id:"m4", name:"Caramel - Lotus", category:"milkshakes", description:"Caramel Sauce, Milk, Double Shot Of Espresso, Lotus", price_s:null, price_m:null, price_l:null, price_fixed:3.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/m4.webp", available:true },
+    // ── Specialities (S / M / L) ─────────────────────────────────
+    { id:"s1", name:"Avocado With Halawet el Jibin", category:"specialities", description:"With Chocolate Extra 1$", price_s:4.00, price_m:5.00, price_l:6.00, price_fixed:null, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/s2.jpg", available:true },
+    { id:"s2", name:"Avocado With Ashta", category:"specialities", description:"With Chocolate Extra 1$", price_s:4.00, price_m:5.00, price_l:6.00, price_fixed:null, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/s2.jpg", available:true },
+    { id:"s3", name:"Ice Cream With Biscuit Cups", category:"specialities", description:"With Chocolate Extra 1$", price_s:4.00, price_m:5.00, price_l:6.00, price_fixed:null, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/s3.jpg", available:true }
 ];
 
 // ============================================================
@@ -118,17 +116,18 @@ function navigate(pageId) {
 }
 
 // ============================================================
-// FETCH MENU — from Apps Script (with secret key)
+// FETCH MENU — from Apps Script (now uses domain check, no secret key)
 // ============================================================
 async function fetchMenu() {
     try {
-        // Skip the network call entirely if the URL was never filled in.
         if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes("PASTE_YOUR_FULL")) {
             throw new Error("Apps Script URL not set — using the built-in menu");
         }
 
-        // Add secret key as query parameter
-        const url = `${APPS_SCRIPT_URL}?key=${encodeURIComponent(APPS_SCRIPT_SECRET_KEY)}`;
+        // Send the current domain (GitHub Pages) as ref and origin
+        const hostname = window.location.hostname; // "duotechlb.github.io"
+        const url = `${APPS_SCRIPT_URL}?ref=${encodeURIComponent(hostname)}&origin=${encodeURIComponent(hostname)}`;
+        
         const res = await fetch(url);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
