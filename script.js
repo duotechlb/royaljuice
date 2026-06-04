@@ -16,13 +16,13 @@ const WA_NUMBER       = "96176419154";
 // CATEGORIES
 // ============================================================
 const CATEGORIES = [
-    { id:"juices",       label:"Juices",       emoji:"🍊", image:"https://images.unsplash.com/photo-1622597467836-f3e48ea3ff3b?w=600&auto=format&fit=crop" },
+    { id:"juices",       label:"Juices",       emoji:"🍊", image:" https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/juices.webp" },
     { id:"cold_drinks",  label:"Cold Drinks",  emoji:"💧", image:"https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=600&auto=format&fit=crop" },
-    { id:"hot_drinks",   label:"Hot Drinks",   emoji:"☕", image:"https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&auto=format&fit=crop" },
-    { id:"crepes",       label:"Crêpes",       emoji:"🥞", image:"https://images.unsplash.com/photo-1519676867240-f03562e64548?w=600&auto=format&fit=crop" },
-    { id:"cocktails",    label:"Cocktails",    emoji:"🍸", image:"https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=600&auto=format&fit=crop" },
-    { id:"milkshakes",   label:"Milkshakes",   emoji:"🥤", image:"https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&auto=format&fit=crop" },
-    { id:"specialities", label:"Specialities", emoji:"✨", image:"https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=600&auto=format&fit=crop" }
+    { id:"hot_drinks",   label:"Hot Drinks",   emoji:"☕", image:" https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/hotdrinks.webp" },
+    { id:"crepes",       label:"Crêpes",       emoji:"🥞", image:" https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c.webp" },
+    { id:"cocktails",    label:"Cocktails",    emoji:"🍸", image:" https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/cocktail.webp" },
+    { id:"milkshakes",   label:"Milkshakes",   emoji:"🥤", image:" https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/milkshakes.webp" },
+    { id:"specialities", label:"Specialities", emoji:"✨", image:" https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/s3.jpg" }
 ];
 
 // ============================================================
