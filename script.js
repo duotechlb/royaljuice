@@ -18,17 +18,17 @@ const WA_NUMBER = "96176419154";
 // order they first appear in your Google Sheet (top to bottom).
 // ============================================================
 const KNOWN_CATEGORY_META = {
-    juices:       { label: "Juices",       emoji: "🍊", image: "https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/juices.webp" },
-    cold_drinks:  { label: "Cold Drinks",  emoji: "💧", image: "https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=600&auto=format&fit=crop" },
-    hot_drinks:   { label: "Hot Drinks",   emoji: "☕", image: "https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/hotdrinks.webp" },
-    crepes:       { label: "Crêpes",       emoji: "🥞", image: "https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c.webp" },
-    cocktails:    { label: "Cocktails",    emoji: "🍸", image: "https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c1.jpg" },
-    milkshakes:   { label: "Milkshakes",   emoji: "🥤", image: "https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/m1.jpg" },
-    specialities: { label: "Specialities", emoji: "✨", image: "https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/s3.jpg" }
+    juices:       { label: "Juices",       emoji: "", image: "https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/juices.webp" },
+    cold_drinks:  { label: "Cold Drinks",  emoji: "", image: "https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=600&auto=format&fit=crop" },
+    hot_drinks:   { label: "Hot Drinks",   emoji: "", image: "https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/hotdrinks.webp" },
+    crepes:       { label: "Crêpes",       emoji: "", image: "https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c.webp" },
+    cocktails:    { label: "Cocktails",    emoji: "", image: "https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c1.jpg" },
+    milkshakes:   { label: "Milkshakes",   emoji: "", image: "https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/m1.jpg" },
+    specialities: { label: "Specialities", emoji: "", image: "https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/s3.jpg" }
 };
 
-// Default emojis assigned to unknown categories in order
-const DEFAULT_EMOJIS = ["🍽️","🥗","🍕","🍔","🌮","🧁","🍰","🥘","🫖","🧃","🍣","🥙"];
+// Default emojis for unknown categories (empty — no emoji style)
+const DEFAULT_EMOJIS = ["","","","","","","","","","","",""];
 
 // ============================================================
 // FALLBACK MENU — used if Google Sheets fetch fails
@@ -276,7 +276,7 @@ function renderPills(activeCat) {
         const btn = document.createElement("button");
         btn.className = "pill-btn" + (cat.id === activeCat ? " active" : "");
         btn.dataset.cat = cat.id;
-        btn.textContent = `${cat.emoji} ${cat.label}`;
+        btn.textContent = cat.label;
 
         btn.addEventListener("click", () => {
             scrollLock = true;
@@ -323,7 +323,7 @@ function renderAllSections() {
 
         section.innerHTML = `
             <h2 class="cat-section-title">
-                <span class="s-emoji">${cat.emoji}</span>${cat.label}
+                ${cat.label}
             </h2>
             <div class="items-grid" id="grid-${cat.id}">
                 ${items.length === 0
@@ -541,7 +541,6 @@ function updateCartUI() {
     if (cart.length === 0) {
         list.innerHTML = `
             <div class="empty-bag">
-                <div class="empty-bag-emoji">🍹</div>
                 <p class="empty-msg">Your bag is empty</p>
                 <span class="empty-sub">Add a drink to get started</span>
             </div>`;
