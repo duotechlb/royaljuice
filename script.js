@@ -1,83 +1,87 @@
 /* ============================================================
-   ROYAL JUICE — script.js (with updated fallback menu)
+   ROYAL JUICE — script.js
+   Categories are now built DYNAMICALLY from Google Sheets data.
+   Adding a new category in column C of the sheet is all you need —
+   a tile + pill will appear automatically.
    ============================================================ */
 
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyAuUTvIJKa_eOYMbqILTfvw6S9M0DTJ0U_cV6HE0iD100dEdO8n6rESlOufpPlBGH-Yw/exec";
 
-
-const WA_NUMBER       = "96176419154";
-
-// ============================================================
-// CATEGORIES
-// ============================================================
-const CATEGORIES = [
-    { id:"juices",       label:"Juices",       emoji:"🍊", image:" https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/juices.webp" },
-    { id:"cold_drinks",  label:"Cold Drinks",  emoji:"💧", image:"https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=600&auto=format&fit=crop" },
-    { id:"hot_drinks",   label:"Hot Drinks",   emoji:"☕", image:" https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/hotdrinks.webp" },
-    { id:"crepes",       label:"Crêpes",       emoji:"🥞", image:" https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c.webp" },
-    { id:"cocktails",    label:"Cocktails",    emoji:"🍸", image:" https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c1.jpg" },
-    { id:"milkshakes",   label:"Milkshakes",   emoji:"🥤", image:" https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/m1.jpg" },
-    { id:"specialities", label:"Specialities", emoji:"✨", image:" https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/s3.jpg" }
-];
+const WA_NUMBER = "96176419154";
 
 // ============================================================
-// FALLBACK MENU — exact copy of your Google Sheet (used if fetch fails)
+// KNOWN CATEGORY METADATA
+// Add entries here only if you want a custom emoji or image.
+// Any NEW category added in the sheet will still appear automatically
+// using a default emoji and the first item's own image.
+// The ORDER of categories on the website is controlled by the
+// order they first appear in your Google Sheet (top to bottom).
+// ============================================================
+const KNOWN_CATEGORY_META = {
+    juices:       { label: "Juices",       emoji: "🍊", image: "https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/juices.webp" },
+    cold_drinks:  { label: "Cold Drinks",  emoji: "💧", image: "https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=600&auto=format&fit=crop" },
+    hot_drinks:   { label: "Hot Drinks",   emoji: "☕", image: "https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/hotdrinks.webp" },
+    crepes:       { label: "Crêpes",       emoji: "🥞", image: "https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c.webp" },
+    cocktails:    { label: "Cocktails",    emoji: "🍸", image: "https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c1.jpg" },
+    milkshakes:   { label: "Milkshakes",   emoji: "🥤", image: "https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/m1.jpg" },
+    specialities: { label: "Specialities", emoji: "✨", image: "https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/s3.jpg" }
+};
+
+// Default emojis assigned to unknown categories in order
+const DEFAULT_EMOJIS = ["🍽️","🥗","🍕","🍔","🌮","🧁","🍰","🥘","🫖","🧃","🍣","🥙"];
+
+// ============================================================
+// FALLBACK MENU — used if Google Sheets fetch fails
 // ============================================================
 const FALLBACK_MENU = [
-    // ── Juices (S / M / L) ─────────────────────────────────────────
-    { id:"j1", name:"Orange Juice", category:"juices", description:"Freshly squeezed oranges", price_s:2.00, price_m:3.00, price_l:4.00, price_fixed:null, image_url:"https://raw.githubusercontent.com/alecosrestaurant/alecosrestaurant.github.io/main/orange.webp", available:true },
-    { id:"j2", name:"Lemonade Juice", category:"juices", description:"Freshly squeezed lemons, water, sugar", price_s:2.50, price_m:3.00, price_l:3.50, price_fixed:null, image_url:"https://raw.githubusercontent.com/alecosrestaurant/alecosrestaurant.github.io/main/lemonade.webp", available:true },
-    { id:"j3", name:"Strawberry Juice", category:"juices", description:"Freshly juiced strawberries, pure and simple!", price_s:1.50, price_m:2.00, price_l:2.50, price_fixed:null, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/j3.webp", available:true },
-    { id:"j4", name:"Mango Juice", category:"juices", description:"Fresh tropical mango, blended smooth", price_s:null, price_m:null, price_l:null, price_fixed:3.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/j4.webp", available:true },
-    { id:"j5", name:"Kiwi Juice", category:"juices", description:"Fresh kiwi, naturally sweet and tangy", price_s:null, price_m:null, price_l:null, price_fixed:3.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/j5.webp", available:true },
-    { id:"j6", name:"Pineapple Juice", category:"juices", description:"Fresh pressed pineapple", price_s:null, price_m:null, price_l:null, price_fixed:3.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/j6.webp", available:true },
-    { id:"j7", name:"Iced Irish Coffee", category:"juices", description:"Instant coffee, heavy cream, Baileys/other flavors", price_s:null, price_m:null, price_l:null, price_fixed:4.00, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/j7.webp", available:true },
-    // ── Cold Drinks (fixed price) ─────────────────────────────────
-    { id:"cd1", name:"Water (Small)", category:"cold_drinks", description:"", price_s:null, price_m:null, price_l:null, price_fixed:0.33, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/cd1-2.webp", available:true },
-    { id:"cd2", name:"Water (Large)", category:"cold_drinks", description:"", price_s:null, price_m:null, price_l:null, price_fixed:1.00, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/cd1-2.webp", available:true },
-    // ── Hot Drinks (fixed price) ─────────────────────────────────
-    { id:"h1", name:"Coffee", category:"hot_drinks", description:"With Water Small", price_s:null, price_m:null, price_l:null, price_fixed:1.00, image_url:"https://github.com/alecosrestaurant/alecosrestaurant.github.io/raw/main/espressso.webp", available:true },
-    { id:"h2", name:"Nescafé", category:"hot_drinks", description:"", price_s:null, price_m:null, price_l:null, price_fixed:1.50, image_url:"https://raw.githubusercontent.com/alecosrestaurant/alecosrestaurant.github.io/main/nescafe.webp", available:true },
-    { id:"h3", name:"Cappuccino", category:"hot_drinks", description:"", price_s:null, price_m:null, price_l:null, price_fixed:1.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/h3.webp", available:true },
-    { id:"h4", name:"Hot Chocolate", category:"hot_drinks", description:"", price_s:null, price_m:null, price_l:null, price_fixed:1.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/h4.webp", available:true },
-    // ── Crêpes (fixed price) ─────────────────────────────────────
-    { id:"cr1", name:"Lotus Crêpe", category:"crepes", description:"Biscoff spread, golden and irresistible", price_s:null, price_m:null, price_l:null, price_fixed:4.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c.webp", available:true },
-    { id:"cr2", name:"Dark Crêpe", category:"crepes", description:"Dark chocolate crêpe", price_s:null, price_m:null, price_l:null, price_fixed:4.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c.webp", available:true },
-    { id:"cr3", name:"White Crêpe", category:"crepes", description:"White chocolate crêpe", price_s:null, price_m:null, price_l:null, price_fixed:4.00, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c.webp", available:true },
-    { id:"cr4", name:"Nutella Crêpe", category:"crepes", description:"Warm crêpe filled with Nutella", price_s:null, price_m:null, price_l:null, price_fixed:5.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c.webp", available:true },
-    { id:"cr5", name:"Kinder Crêpe", category:"crepes", description:"Creamy Kinder filling, melted magic", price_s:null, price_m:null, price_l:null, price_fixed:5.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c.webp", available:true },
-    { id:"cr6", name:"Oreo Crêpe", category:"crepes", description:"Crushed Oreo, cream filling", price_s:null, price_m:null, price_l:null, price_fixed:5.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c.webp", available:true },
-    { id:"cr7", name:"Fettuccini Crêpe", category:"crepes", description:"Rich fettuccini-style creamy crêpe", price_s:null, price_m:null, price_l:null, price_fixed:5.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c.webp", available:true },
-    { id:"cr8", name:"Mix Crêpe", category:"crepes", description:"A mix of our favorite fillings", price_s:null, price_m:null, price_l:null, price_fixed:6.00, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c.webp", available:true },
-    { id:"cr9", name:"Fluo Crêpe", category:"crepes", description:"Vibrant colorful fluo crêpe", price_s:null, price_m:null, price_l:null, price_fixed:7.00, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c.webp", available:true },
-    // ── Cocktails (S / M / L) ────────────────────────────────────
-    { id:"c1", name:"Fruit Smoothie Cocktail", category:"cocktails", description:"Avocado, Strawberry, Banana, kiwi, Mango, Pineapple...", price_s:4, price_m:5, price_l:6, price_fixed:null, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c1.jpg", available:true },
-    { id:"c2", name:"Avocado Cocktail", category:"cocktails", description:"Avocado, Lime Juice, Honey/Chocolate", price_s:5, price_m:5.5, price_l:6.5, price_fixed:null, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/avocat-cocktail.jpg", available:true },
-    { id:"c3", name:"Brownie Cocktail", category:"cocktails", description:"Brownie, Fruits, Honey, Chocolate Syrup", price_s:4, price_m:5, price_l:6, price_fixed:null, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c3.webp", available:true },
-    // ── Milkshakes (fixed price) ─────────────────────────────────
-    { id:"m1", name:"Decadent Chocolate", category:"milkshakes", description:"Chocolate Ice Cream, Milk, Chocolate Syrup", price_s:null, price_m:null, price_l:null, price_fixed:3.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/m1.jpg", available:true },
-    { id:"m2", name:"Vanilla - Nutella", category:"milkshakes", description:"Vanilla Ice Cream, Milk, Nutella, Vanilla Extract", price_s:null, price_m:null, price_l:null, price_fixed:3.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/m2.jpg", available:true },
-    { id:"m3", name:"Refreshing Strawberry/Chocolate Iced Latte", category:"milkshakes", description:"Strawberry Ice Cream, Milk, Fresh Strawberries, Chocolate Syrup/Instant Coffee", price_s:null, price_m:null, price_l:null, price_fixed:3.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/m3.jpg", available:true },
-    { id:"m4", name:"Caramel - Lotus", category:"milkshakes", description:"Caramel Sauce, Milk, Double Shot Of Espresso, Lotus", price_s:null, price_m:null, price_l:null, price_fixed:3.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/m4.webp", available:true },
-    // ── Specialities (S / M / L) ─────────────────────────────────
-    { id:"s1", name:"Avocado With Halawet el Jibin", category:"specialities", description:"With Chocolate Extra 1$", price_s:4.00, price_m:5.00, price_l:6.00, price_fixed:null, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/s2.jpg", available:true },
-    { id:"s2", name:"Avocado With Ashta", category:"specialities", description:"With Chocolate Extra 1$", price_s:4.00, price_m:5.00, price_l:6.00, price_fixed:null, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/s2.jpg", available:true },
-    { id:"s3", name:"Ice Cream With Biscuit Cups", category:"specialities", description:"With Chocolate Extra 1$", price_s:4.00, price_m:5.00, price_l:6.00, price_fixed:null, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/s3.jpg", available:true }
+    { id:"j1",  name:"Orange Juice",          category:"juices",       description:"Freshly squeezed oranges",                                              price_s:2.00,  price_m:3.00, price_l:4.00, price_fixed:null, image_url:"https://raw.githubusercontent.com/alecosrestaurant/alecosrestaurant.github.io/main/orange.webp",         available:true },
+    { id:"j2",  name:"Lemonade Juice",         category:"juices",       description:"Freshly squeezed lemons, water, sugar",                                 price_s:2.50,  price_m:3.00, price_l:3.50, price_fixed:null, image_url:"https://raw.githubusercontent.com/alecosrestaurant/alecosrestaurant.github.io/main/lemonade.webp",       available:true },
+    { id:"j3",  name:"Strawberry Juice",       category:"juices",       description:"Freshly juiced strawberries, pure and simple!",                         price_s:1.50,  price_m:2.00, price_l:2.50, price_fixed:null, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/j3.webp",                          available:true },
+    { id:"j4",  name:"Mango Juice",            category:"juices",       description:"Fresh tropical mango, blended smooth",                                  price_s:null,  price_m:null, price_l:null, price_fixed:3.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/j4.webp",                          available:true },
+    { id:"j5",  name:"Kiwi Juice",             category:"juices",       description:"Fresh kiwi, naturally sweet and tangy",                                 price_s:null,  price_m:null, price_l:null, price_fixed:3.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/j5.webp",                          available:true },
+    { id:"j6",  name:"Pineapple Juice",        category:"juices",       description:"Fresh pressed pineapple",                                               price_s:null,  price_m:null, price_l:null, price_fixed:3.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/j6.webp",                          available:true },
+    { id:"j7",  name:"Iced Irish Coffee",      category:"juices",       description:"Instant coffee, heavy cream, Baileys/other flavors",                    price_s:null,  price_m:null, price_l:null, price_fixed:4.00, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/j7.webp",                          available:true },
+    { id:"cd1", name:"Water (Small)",          category:"cold_drinks",  description:"",                                                                      price_s:null,  price_m:null, price_l:null, price_fixed:0.33, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/cd1-2.webp",                        available:true },
+    { id:"cd2", name:"Water (Large)",          category:"cold_drinks",  description:"",                                                                      price_s:null,  price_m:null, price_l:null, price_fixed:1.00, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/cd1-2.webp",                        available:true },
+    { id:"h1",  name:"Coffee",                 category:"hot_drinks",   description:"With Water Small",                                                      price_s:null,  price_m:null, price_l:null, price_fixed:1.00, image_url:"https://github.com/alecosrestaurant/alecosrestaurant.github.io/raw/main/espressso.webp",                  available:true },
+    { id:"h2",  name:"Nescafé",               category:"hot_drinks",   description:"",                                                                      price_s:null,  price_m:null, price_l:null, price_fixed:1.50, image_url:"https://raw.githubusercontent.com/alecosrestaurant/alecosrestaurant.github.io/main/nescafe.webp",          available:true },
+    { id:"h3",  name:"Cappuccino",             category:"hot_drinks",   description:"",                                                                      price_s:null,  price_m:null, price_l:null, price_fixed:1.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/h3.webp",                          available:true },
+    { id:"h4",  name:"Hot Chocolate",          category:"hot_drinks",   description:"",                                                                      price_s:null,  price_m:null, price_l:null, price_fixed:1.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/h4.webp",                          available:true },
+    { id:"cr1", name:"Lotus Crêpe",           category:"crepes",       description:"Biscoff spread, golden and irresistible",                               price_s:null,  price_m:null, price_l:null, price_fixed:4.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c.webp",                           available:true },
+    { id:"cr2", name:"Dark Crêpe",            category:"crepes",       description:"Dark chocolate crêpe",                                                 price_s:null,  price_m:null, price_l:null, price_fixed:4.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c.webp",                           available:true },
+    { id:"cr3", name:"White Crêpe",           category:"crepes",       description:"White chocolate crêpe",                                                price_s:null,  price_m:null, price_l:null, price_fixed:4.00, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c.webp",                           available:true },
+    { id:"cr4", name:"Nutella Crêpe",         category:"crepes",       description:"Warm crêpe filled with Nutella",                                       price_s:null,  price_m:null, price_l:null, price_fixed:5.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c.webp",                           available:true },
+    { id:"cr5", name:"Kinder Crêpe",          category:"crepes",       description:"Creamy Kinder filling, melted magic",                                   price_s:null,  price_m:null, price_l:null, price_fixed:5.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c.webp",                           available:true },
+    { id:"cr6", name:"Oreo Crêpe",            category:"crepes",       description:"Crushed Oreo, cream filling",                                           price_s:null,  price_m:null, price_l:null, price_fixed:5.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c.webp",                           available:true },
+    { id:"cr7", name:"Fettuccini Crêpe",      category:"crepes",       description:"Rich fettuccini-style creamy crêpe",                                   price_s:null,  price_m:null, price_l:null, price_fixed:5.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c.webp",                           available:true },
+    { id:"cr8", name:"Mix Crêpe",             category:"crepes",       description:"A mix of our favorite fillings",                                        price_s:null,  price_m:null, price_l:null, price_fixed:6.00, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c.webp",                           available:true },
+    { id:"cr9", name:"Fluo Crêpe",            category:"crepes",       description:"Vibrant colorful fluo crêpe",                                           price_s:null,  price_m:null, price_l:null, price_fixed:7.00, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c.webp",                           available:true },
+    { id:"c1",  name:"Fruit Smoothie Cocktail", category:"cocktails",  description:"Avocado, Strawberry, Banana, kiwi, Mango, Pineapple...",               price_s:4,     price_m:5,    price_l:6,    price_fixed:null, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c1.jpg",                           available:true },
+    { id:"c2",  name:"Avocado Cocktail",       category:"cocktails",   description:"Avocado, Lime Juice, Honey/Chocolate",                                  price_s:5,     price_m:5.5,  price_l:6.5,  price_fixed:null, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/avocat-cocktail.jpg",               available:true },
+    { id:"c3",  name:"Brownie Cocktail",       category:"cocktails",   description:"Brownie, Fruits, Honey, Chocolate Syrup",                               price_s:4,     price_m:5,    price_l:6,    price_fixed:null, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/c3.webp",                          available:true },
+    { id:"m1",  name:"Decadent Chocolate",     category:"milkshakes",  description:"Chocolate Ice Cream, Milk, Chocolate Syrup",                            price_s:null,  price_m:null, price_l:null, price_fixed:3.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/m1.jpg",                           available:true },
+    { id:"m2",  name:"Vanilla - Nutella",      category:"milkshakes",  description:"Vanilla Ice Cream, Milk, Nutella, Vanilla Extract",                    price_s:null,  price_m:null, price_l:null, price_fixed:3.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/m2.jpg",                           available:true },
+    { id:"m3",  name:"Refreshing Strawberry/Chocolate Iced Latte", category:"milkshakes", description:"Strawberry Ice Cream, Milk, Fresh Strawberries, Chocolate Syrup/Instant Coffee", price_s:null, price_m:null, price_l:null, price_fixed:3.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/m3.jpg", available:true },
+    { id:"m4",  name:"Caramel - Lotus",        category:"milkshakes",  description:"Caramel Sauce, Milk, Double Shot Of Espresso, Lotus",                  price_s:null,  price_m:null, price_l:null, price_fixed:3.50, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/m4.webp",                          available:true },
+    { id:"s1",  name:"Avocado With Halawet el Jibin", category:"specialities", description:"With Chocolate Extra 1$",                                        price_s:4.00,  price_m:5.00, price_l:6.00, price_fixed:null, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/s2.jpg",                          available:true },
+    { id:"s2",  name:"Avocado With Ashta",     category:"specialities", description:"With Chocolate Extra 1$",                                               price_s:4.00,  price_m:5.00, price_l:6.00, price_fixed:null, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/s2.jpg",                          available:true },
+    { id:"s3",  name:"Ice Cream With Biscuit Cups", category:"specialities", description:"With Chocolate Extra 1$",                                          price_s:4.00,  price_m:5.00, price_l:6.00, price_fixed:null, image_url:"https://raw.githubusercontent.com/duotechlb/royaljuice/main/royaljuice/s3.jpg",                          available:true }
 ];
 
 // ============================================================
 // STATE
 // ============================================================
-let menuItems       = [];
-let cart            = [];
-let currentPage     = "home";
-let selectedItem    = null;
-let selectedSize    = null;
-let activePillId    = null;
-let pillObserver    = null;
-let itemsViewReady  = false;
-let scrollLock      = false;
-let scrollLockTimer = null;
+let menuItems        = [];
+let CATEGORIES       = [];   // built dynamically after menu loads
+let cart             = [];
+let currentPage      = "home";
+let selectedItem     = null;
+let selectedSize     = null;
+let activePillId     = null;
+let pillObserver     = null;
+let itemsViewReady   = false;
+let scrollLock       = false;
+let scrollLockTimer  = null;
 let selectedOrderType = null;
 
 // ============================================================
@@ -93,6 +97,42 @@ const pages = {
 };
 
 // ============================================================
+// BUILD CATEGORIES FROM MENU DATA
+// Called after menuItems is populated. Preserves sheet row order.
+// ============================================================
+function buildCategoriesFromMenu(items) {
+    const seen = new Map();   // catId -> first item's image (fallback)
+    let unknownCount = 0;
+
+    items.forEach(item => {
+        if (!item.category) return;
+        const id = item.category;
+        if (!seen.has(id)) {
+            seen.set(id, item.image);
+        }
+    });
+
+    const result = [];
+    seen.forEach((firstImage, id) => {
+        if (KNOWN_CATEGORY_META[id]) {
+            // Use the curated metadata
+            result.push({ id, ...KNOWN_CATEGORY_META[id] });
+        } else {
+            // Brand-new category — auto-generate label, emoji, and use the item's own image
+            const emoji = DEFAULT_EMOJIS[unknownCount % DEFAULT_EMOJIS.length];
+            unknownCount++;
+            // Convert snake_case / underscores to Title Case for the label
+            const label = id
+                .replace(/_/g, " ")
+                .replace(/\b\w/g, c => c.toUpperCase());
+            result.push({ id, label, emoji, image: firstImage });
+        }
+    });
+
+    return result;
+}
+
+// ============================================================
 // NAVIGATION
 // ============================================================
 function navigate(pageId) {
@@ -106,7 +146,7 @@ function navigate(pageId) {
         el.classList.toggle("active", el.dataset.page === pageId);
     });
 
-    window.scrollTo({ top:0, behavior:"smooth" });
+    window.scrollTo({ top: 0, behavior: "smooth" });
     closeCart();
     closeMobileNav();
 
@@ -116,7 +156,7 @@ function navigate(pageId) {
 }
 
 // ============================================================
-// FETCH MENU — from Apps Script (now uses domain check, no secret key)
+// FETCH MENU — from Apps Script (domain check, no secret key)
 // ============================================================
 async function fetchMenu() {
     try {
@@ -124,10 +164,9 @@ async function fetchMenu() {
             throw new Error("Apps Script URL not set — using the built-in menu");
         }
 
-        // Send the current domain (GitHub Pages) as ref and origin
-        const hostname = window.location.hostname; // "duotechlb.github.io"
+        const hostname = window.location.hostname;
         const url = `${APPS_SCRIPT_URL}?ref=${encodeURIComponent(hostname)}&origin=${encodeURIComponent(hostname)}`;
-        
+
         const res = await fetch(url);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
@@ -141,6 +180,11 @@ async function fetchMenu() {
         console.warn("⚠️ Apps Script fetch failed, using fallback:", err.message);
         menuItems = FALLBACK_MENU.map(normalizeItem);
     }
+
+    // Always rebuild categories from whatever data we now have
+    CATEGORIES = buildCategoriesFromMenu(menuItems);
+    console.log(`📂 Categories detected:`, CATEGORIES.map(c => c.id));
+
     itemsViewReady = false;
 }
 
@@ -150,17 +194,17 @@ function normalizeItem(item) {
     const pl = parseFloat(item.price_l)     || null;
     const pf = parseFloat(item.price_fixed) || null;
 
-    const hasSizes    = !!(ps && pm && pl && !(ps === pm && pm === pl));
+    const hasSizes     = !!(ps && pm && pl && !(ps === pm && pm === pl));
     const displayPrice = hasSizes ? ps : (pf || ps || pm || pl);
 
     return {
         id:          String(item.id || crypto.randomUUID()),
         name:        String(item.name || ""),
-        category:    String(item.category || "").toLowerCase().replace(/\s+/g, "_"),
+        category:    String(item.category || "").toLowerCase().trim().replace(/\s+/g, "_"),
         description: String(item.description || ""),
-        image:       String(item.image_url || "https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=600&auto=format"),
+        image:       String(item.image_url || "https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=600&auto=format").trim(),
         hasSizes,
-        prices:      hasSizes ? { s:ps, m:pm, l:pl } : null,
+        prices:      hasSizes ? { s: ps, m: pm, l: pl } : null,
         price:       displayPrice,
         available:   item.available !== false && item.available !== "FALSE" && item.available !== 0
     };
@@ -257,14 +301,14 @@ function setActivePill(catId, force = false) {
         b.classList.toggle("active", b.dataset.cat === catId);
     });
     const active = document.querySelector(`.pill-btn[data-cat="${catId}"]`);
-    if (active) active.scrollIntoView({ inline:"center", behavior:"smooth", block:"nearest" });
+    if (active) active.scrollIntoView({ inline: "center", behavior: "smooth", block: "nearest" });
 }
 
 function scrollToSection(catId) {
     const el = document.querySelector(`[data-section="${catId}"]`);
     if (!el) return;
     const offset = el.getBoundingClientRect().top + window.scrollY - 136;
-    window.scrollTo({ top: Math.max(0, offset), behavior:"smooth" });
+    window.scrollTo({ top: Math.max(0, offset), behavior: "smooth" });
 }
 
 function renderAllSections() {
@@ -272,9 +316,9 @@ function renderAllSections() {
     container.innerHTML = "";
 
     CATEGORIES.forEach(cat => {
-        const items = menuItems.filter(i => i.category === cat.id && i.available);
+        const items   = menuItems.filter(i => i.category === cat.id && i.available);
         const section = document.createElement("div");
-        section.className = "cat-section";
+        section.className    = "cat-section";
         section.dataset.section = cat.id;
 
         section.innerHTML = `
@@ -318,10 +362,8 @@ function renderAllSections() {
 }
 
 function renderItemCard(item) {
-    // Size / price block
     let priceBlockHtml;
     if (item.hasSizes) {
-        // Show ALL THREE sizes (S / M / L) with their prices
         priceBlockHtml = `
             <div class="item-sizes">
                 ${["s","m","l"].map(sz => `
@@ -379,7 +421,7 @@ function setupScrollObserver() {
             }
         });
         if (best) setActivePill(best.id);
-    }, { rootMargin:"-25% 0px -55% 0px", threshold:[0, 0.1, 0.25, 0.5] });
+    }, { rootMargin: "-25% 0px -55% 0px", threshold: [0, 0.1, 0.25, 0.5] });
 
     sections.forEach(s => pillObserver.observe(s));
 }
@@ -392,9 +434,9 @@ function openSizeSheet(item, presetSize = null) {
     selectedSize = null;
 
     const SIZE_LABELS = {
-        s: { label:"Small",  sub:"Regular glass" },
-        m: { label:"Medium", sub:"Large glass" },
-        l: { label:"Large",  sub:"Extra large" }
+        s: { label: "Small",  sub: "Regular glass" },
+        m: { label: "Medium", sub: "Large glass" },
+        l: { label: "Large",  sub: "Extra large" }
     };
 
     $("sizeSheetContent").innerHTML = `
@@ -452,7 +494,6 @@ function openSizeSheet(item, presetSize = null) {
         $("sizeBackdrop").classList.add("visible");
         $("sizeSheet").classList.add("open");
 
-        // If the user tapped a specific size chip, pre-select that size
         if (presetSize) {
             const presetOpt = document.querySelector(`.size-opt[data-size="${presetSize}"]`);
             if (presetOpt) presetOpt.click();
@@ -478,11 +519,11 @@ function addToCart(item, size, price) {
         existing.qty += 1;
     } else {
         cart.push({
-            key, id:item.id,
+            key, id: item.id,
             name:  item.name,
             image: item.image,
             size:  size ? size.toUpperCase() : null,
-            price, qty:1
+            price, qty: 1
         });
     }
     updateCartUI();
@@ -656,7 +697,7 @@ function showToast(msg, duration = 2200) {
 // ============================================================
 function escHtml(str) {
     return String(str).replace(/[&<>"']/g, m => ({
-        "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
     })[m]);
 }
 
@@ -707,17 +748,17 @@ function initEvents() {
 
     let sheetStartY = 0;
     const sheet = $("sizeSheet");
-    sheet.addEventListener("touchstart", e => { sheetStartY = e.touches[0].clientY; }, { passive:true });
+    sheet.addEventListener("touchstart", e => { sheetStartY = e.touches[0].clientY; }, { passive: true });
     sheet.addEventListener("touchend", e => {
         if (e.changedTouches[0].clientY - sheetStartY > 80) closeSizeSheet();
-    }, { passive:true });
+    }, { passive: true });
 
     let coStartY = 0;
     const coModal = $("checkoutModal");
-    coModal.addEventListener("touchstart", e => { coStartY = e.touches[0].clientY; }, { passive:true });
+    coModal.addEventListener("touchstart", e => { coStartY = e.touches[0].clientY; }, { passive: true });
     coModal.addEventListener("touchend", e => {
         if (e.changedTouches[0].clientY - coStartY > 80) closeCheckoutModal();
-    }, { passive:true });
+    }, { passive: true });
 }
 
 // ============================================================
@@ -725,7 +766,7 @@ function initEvents() {
 // ============================================================
 async function boot() {
     initEvents();
-    await fetchMenu();
+    await fetchMenu();   // builds CATEGORIES dynamically
     updateCartUI();
     if (currentPage === "menu") showCategoryGrid();
 }
