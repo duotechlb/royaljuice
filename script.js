@@ -7,7 +7,7 @@
 
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyAuUTvIJKa_eOYMbqILTfvw6S9M0DTJ0U_cV6HE0iD100dEdO8n6rESlOufpPlBGH-Yw/exec";
 
-const WA_NUMBER = "96176419154";
+const WA_NUMBER = "96103849046";
 
 // ============================================================
 // KNOWN CATEGORY METADATA
